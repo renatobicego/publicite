@@ -49,7 +49,7 @@ interface Props {
   onReview?: (stars: number) => void;
 }
 
-const displayName = (info?: ProductionOwnerInfo | null) =>
+export const displayName = (info?: ProductionOwnerInfo | null) =>
   info?.businessName ||
   [info?.name, info?.lastName].filter(Boolean).join(" ") ||
   info?.username ||
@@ -60,7 +60,7 @@ const displayName = (info?: ProductionOwnerInfo | null) =>
  * Autor de una reseña o comentario: foto, nombre y @usuario. Todo el bloque
  * lleva al cartel del usuario.
  */
-const AuthorLink = ({
+export const AuthorLink = ({
   info,
   suffix,
   small,

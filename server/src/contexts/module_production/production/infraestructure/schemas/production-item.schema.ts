@@ -1,6 +1,7 @@
 import { Document, model, Schema, Types } from 'mongoose';
 
 import {
+  ProductionCollectionType,
   ProductionFileType,
   ProductionItemKind,
   ProductionModerationStatus,
@@ -16,6 +17,11 @@ export interface ProductionItemDocument extends Document {
   visibility: ProductionVisibility | null;
   moderationStatus: ProductionModerationStatus;
   createdBy: Types.ObjectId;
+  // Sólo carpetas: colección (álbum, película, serie, disco) y Love It.
+  collectionType?: ProductionCollectionType | null;
+  loveItEnabled?: boolean;
+  description?: string;
+  coverItem?: Types.ObjectId | null;
   // Sólo archivos y artículos.
   fileName?: string;
   fileType?: ProductionFileType;
@@ -87,7 +93,25 @@ ProductionItemSchema.index(
   },
 );
 
-export const ProductionFolderSchema = new Schema({});
+// Una carpeta puede ser una colección (álbum, película, serie, disco) con su
+// propia pantalla. Las carpetas anteriores no tienen estos campos: son comunes.
+export const ProductionFolderSchema = new Schema({
+  collectionType: {
+    type: String,
+    enum: [...Object.values(ProductionCollectionType), null],
+    default: null,
+  },
+  // Love It: sólo en álbumes, lo prende el staff.
+  loveItEnabled: { type: Boolean, default: false },
+  // Sinopsis o texto de la colección.
+  description: { type: String, default: '' },
+  // Foto de adentro que se usa como afiche o tapa.
+  coverItem: {
+    type: Schema.Types.ObjectId,
+    ref: 'ProductionItem',
+    default: null,
+  },
+});
 
 export const ProductionFileSchema = new Schema({
   fileName: { type: String, required: true, trim: true },

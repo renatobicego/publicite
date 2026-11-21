@@ -26,8 +26,9 @@
  *   false, `Production.filesCount` se sigue contando pero no se rechaza ninguna
  *   subida por cantidad; el tope real pasa a ser el almacenamiento.
  * - PRODUCTION_STORAGE_LIMIT_ENABLED: activa el límite de ALMACENAMIENTO por
- *   usuario (suma de bytes de los archivos de todos sus blogs). Default: false
- *   (feature nueva, apagada por defecto). El límite en bytes se configura por
+ *   usuario (suma de bytes de los archivos de todos sus blogs). Default: true:
+ *   los archivos no tienen tope de peso propio más allá del técnico de
+ *   UploadThing (8 GB un video), así que lo que limita es el plan. El límite en bytes se configura por
  *   plan en `subscriptionPlan.storageBytesLimit` (acumulativo entre suscripciones
  *   activas); el piso gratuito es `PRODUCTION_FREE_STORAGE_BYTES`.
  * - PRODUCTION_FREE_STORAGE_BYTES: piso de almacenamiento del plan gratuito, en
@@ -86,11 +87,12 @@ export function isFilesPerBlogLimitEnabled(): boolean {
 }
 
 /**
- * ¿Está activo el límite de ALMACENAMIENTO (bytes) por usuario? Feature nueva,
- * apagada por defecto. Si es false, las subidas no validan ni contabilizan bytes.
+ * ¿Está activo el límite de ALMACENAMIENTO (bytes) por usuario? Prendido por
+ * defecto: es lo único que frena un archivo grande. Si es false, las subidas no
+ * validan ni contabilizan bytes.
  */
 export function isStorageLimitEnabled(): boolean {
-  return readBoolean('PRODUCTION_STORAGE_LIMIT_ENABLED', false);
+  return readBoolean('PRODUCTION_STORAGE_LIMIT_ENABLED', true);
 }
 
 /** Piso de almacenamiento del plan gratuito, en bytes (default 100 MB). */

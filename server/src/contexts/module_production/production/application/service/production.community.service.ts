@@ -11,7 +11,16 @@ import { ClientSession, Connection } from 'mongoose';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { Production } from '../../domain/entity/production.entity';
-import { ProductionRole } from '../../domain/entity/enum/production.enums';
+import {
+  ProductionFileType,
+  ProductionPhotoVote,
+  ProductionRole,
+} from '../../domain/entity/enum/production.enums';
+import {
+  ProductionFile,
+  ProductionFolder,
+} from '../../domain/entity/production-item.entity';
+import { ProductionItemRepositoryInterface } from '../../domain/repository/production-item.repository.interface';
 import {
   ProductionCommentInput,
   ProductionReviewInput,
@@ -21,7 +30,10 @@ import {
   ProductionCommentListResponse,
   ProductionCommentResponse,
   ProductionFanListResponse,
+  ProductionLoveItPhotoResponse,
+  ProductionLoveItResultsResponse,
   ProductionPendingReviewResponse,
+  ProductionPhotoVoteResponse,
   ProductionReviewListResponse,
   ProductionReviewResponse,
 } from '../../domain/entity/models_graphql/HTTP-RESPONSE/production-community.response';
@@ -84,6 +96,8 @@ export class ProductionCommunityService
     @Inject('ProductionServiceInterface')
     private readonly productionService: ProductionServiceInterface,
     private readonly accessService: ProductionAccessService,
+    @Inject('ProductionItemRepositoryInterface')
+    private readonly itemRepository: ProductionItemRepositoryInterface,
   ) {}
 
   // ---------------------------------------------------------------------------
@@ -604,6 +618,151 @@ export class ProductionCommunityService
       ),
       total,
       hasMore: pages.page * pages.limit < total,
+    };
+  }
+
+  // ---------------------------------------------------------------------------
+  // Love It: votos sobre las fotos de un álbum
+  // ---------------------------------------------------------------------------
+
+  private async getFolderOrFail(folderId: string): Promise<ProductionFolder> {
+    const folder = await this.itemRepository.findById(folderId);
+    if (!(folder instanceof ProductionFolder)) {
+      throw new NotFoundException('Álbum no encontrado');
+    }
+    return folder;
+  }
+
+  /** Fotos que están directamente en la carpeta (Love It no entra en subcarpetas). */
+  private async findFolderPhotos(folder: ProductionFolder) {
+    const children = await this.itemRepository.findChildren(
+      folder.getProduction,
+      folder.getId!,
+    );
+    return children.filter(
+      (child): child is ProductionFile =>
+        child instanceof ProductionFile &&
+        child.getFileType === ProductionFileType.photo,
+    );
+  }
+
+  /**
+   * Vota (o cambia o quita el voto de) una foto. La foto tiene que estar en un
+   * álbum con Love It y el usuario tiene que poder verla: alcance, clave y,
+   * si el blog o la carpeta lo pide, ticket.
+   */
+  async setProductionPhotoVote(
+    itemId: string,
+    vote: ProductionPhotoVote | null,
+    userId: string,
+  ): Promise<ProductionPhotoVoteResponse> {
+    const item = await this.itemRepository.findById(itemId);
+    if (!item) throw new NotFoundException('Elemento no encontrado');
+    if (
+      !(item instanceof ProductionFile) ||
+      item.getFileType !== ProductionFileType.photo
+    ) {
+      throw new BadRequestException('Love It es sólo para fotos');
+    }
+    const folder = item.getParent
+      ? await this.itemRepository.findById(item.getParent)
+      : null;
+    if (!(folder instanceof ProductionFolder) || !folder.isLoveItEnabled) {
+      throw new BadRequestException('Este álbum no tiene Love It activado');
+    }
+    await this.openForViewer(item.getProduction, userId, itemId);
+
+    if (vote) {
+      await this.communityRepository.setPhotoVote(
+        item.getProduction,
+        itemId,
+        userId,
+        vote,
+      );
+    } else {
+      await this.communityRepository.removePhotoVote(itemId, userId);
+    }
+    return { item: itemId, vote: vote ?? null };
+  }
+
+  /** Lo que votó el usuario en un álbum, para retomar Love It donde lo dejó. */
+  async getMyProductionPhotoVotes(
+    folderId: string,
+    userId: string,
+  ): Promise<ProductionPhotoVoteResponse[]> {
+    const folder = await this.getFolderOrFail(folderId);
+    await this.openForViewer(folder.getProduction, userId, folderId);
+    const photos = await this.findFolderPhotos(folder);
+    const votes = await this.communityRepository.findPhotoVotes(
+      photos.map((photo) => photo.getId!),
+      userId,
+    );
+    return votes.map((entry) => ({
+      item: entry.item,
+      vote: entry.vote as ProductionPhotoVote,
+    }));
+  }
+
+  /**
+   * Resultados del álbum para el staff del blog: cada foto con sus votos y
+   * quién votó qué.
+   */
+  async getProductionLoveItResults(
+    folderId: string,
+    userId: string,
+  ): Promise<ProductionLoveItResultsResponse> {
+    const folder = await this.getFolderOrFail(folderId);
+    const production = await this.getProductionOrFail(folder.getProduction);
+    await this.accessService.assertPermission(
+      production,
+      userId,
+      'canViewInsights',
+    );
+    const photos = await this.findFolderPhotos(folder);
+    const votes = await this.communityRepository.findPhotoVotes(
+      photos.map((photo) => photo.getId!),
+    );
+    const users = await this.productionRepository.findUsersInfo([
+      ...new Set(votes.map((entry) => entry.user)),
+    ]);
+
+    const byPhoto = new Map<string, ProductionLoveItPhotoResponse>(
+      photos.map((photo) => [
+        photo.getId!,
+        {
+          item: photo.getId!,
+          name: photo.getName,
+          fileName: photo.getFileName,
+          key: photo.getKey,
+          fanCount: 0,
+          likeCount: 0,
+          maybeCount: 0,
+          noCount: 0,
+          votes: [],
+        },
+      ]),
+    );
+    for (const entry of votes) {
+      const photo = byPhoto.get(entry.item);
+      if (!photo) continue;
+      const vote = entry.vote as ProductionPhotoVote;
+      if (vote === ProductionPhotoVote.fan) photo.fanCount++;
+      else if (vote === ProductionPhotoVote.like) photo.likeCount++;
+      else if (vote === ProductionPhotoVote.maybe) photo.maybeCount++;
+      else if (vote === ProductionPhotoVote.no) photo.noCount++;
+      photo.votes.push({
+        user: entry.user,
+        userInfo: publicInfo(users, entry.user),
+        vote,
+        updatedAt: entry.updatedAt,
+      });
+    }
+
+    return {
+      folder: folderId,
+      votersCount: new Set(votes.map((entry) => entry.user)).size,
+      votesCount: votes.length,
+      photos: [...byPhoto.values()],
     };
   }
 }

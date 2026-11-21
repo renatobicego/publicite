@@ -7,7 +7,9 @@ import {
   ProductionCommentListResponse,
   ProductionCommentResponse,
   ProductionFanListResponse,
+  ProductionLoveItResultsResponse,
   ProductionPendingReviewResponse,
+  ProductionPhotoVoteResponse,
   ProductionReviewListResponse,
   ProductionReviewResponse,
 } from '../entity/models_graphql/HTTP-RESPONSE/production-community.response';
@@ -15,6 +17,7 @@ import {
   ProductionListResponse,
   ProductionResponse,
 } from '../entity/models_graphql/HTTP-RESPONSE/production.response';
+import { ProductionPhotoVote } from '../entity/enum/production.enums';
 
 /** Fans, reseñas y comentarios (§6). */
 export interface ProductionCommunityServiceInterface {
@@ -80,4 +83,19 @@ export interface ProductionCommunityServiceInterface {
     page: number,
     limit: number,
   ): Promise<ProductionCommentListResponse>;
+
+  // Love It
+  setProductionPhotoVote(
+    itemId: string,
+    vote: ProductionPhotoVote | null,
+    userId: string,
+  ): Promise<ProductionPhotoVoteResponse>;
+  getMyProductionPhotoVotes(
+    folderId: string,
+    userId: string,
+  ): Promise<ProductionPhotoVoteResponse[]>;
+  getProductionLoveItResults(
+    folderId: string,
+    userId: string,
+  ): Promise<ProductionLoveItResultsResponse>;
 }

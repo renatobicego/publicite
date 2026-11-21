@@ -13,7 +13,9 @@ import {
   ProductionCommentListResponse,
   ProductionCommentResponse,
   ProductionFanListResponse,
+  ProductionLoveItResultsResponse,
   ProductionPendingReviewResponse,
+  ProductionPhotoVoteResponse,
   ProductionReviewListResponse,
   ProductionReviewResponse,
 } from '../../../domain/entity/models_graphql/HTTP-RESPONSE/production-community.response';
@@ -26,6 +28,7 @@ import {
   ProductionGqlContext,
   requireUserId,
 } from './production.context';
+import { ProductionPhotoVote } from '../../../domain/entity/enum/production.enums';
 
 /** Fans, reseñas y comentarios de Mis Producciones (Fase 8). */
 @Resolver()
@@ -252,6 +255,54 @@ export class ProductionCommunityResolver {
       optionalUserId(context),
       page,
       limit,
+    );
+  }
+
+  // --- Love It ------------------------------------------------------------------
+
+  @Mutation(() => ProductionPhotoVoteResponse, {
+    description:
+      'Love It: votar una foto de un álbum (fan, like, maybe, no). vote vacío = quitar el voto',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async setProductionPhotoVote(
+    @Args('itemId', { type: () => ID }) itemId: string,
+    @Args('vote', { type: () => ProductionPhotoVote, nullable: true })
+    vote: ProductionPhotoVote | null,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionPhotoVoteResponse> {
+    return this.communityAdapter.setProductionPhotoVote(
+      itemId,
+      vote ?? null,
+      requireUserId(context),
+    );
+  }
+
+  @Query(() => [ProductionPhotoVoteResponse], {
+    description: 'Love It: mis votos en las fotos de un álbum',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async getMyProductionPhotoVotes(
+    @Args('folderId', { type: () => ID }) folderId: string,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionPhotoVoteResponse[]> {
+    return this.communityAdapter.getMyProductionPhotoVotes(
+      folderId,
+      requireUserId(context),
+    );
+  }
+
+  @Query(() => ProductionLoveItResultsResponse, {
+    description: 'Love It: resultados del álbum, quién votó qué (staff del blog)',
+  })
+  @UseGuards(ClerkAuthGuard)
+  async getProductionLoveItResults(
+    @Args('folderId', { type: () => ID }) folderId: string,
+    @Context() context: ProductionGqlContext,
+  ): Promise<ProductionLoveItResultsResponse> {
+    return this.communityAdapter.getProductionLoveItResults(
+      folderId,
+      requireUserId(context),
     );
   }
 }

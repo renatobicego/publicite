@@ -6,6 +6,7 @@ import {
   ProductionComment,
   ProductionCommunityRepositoryInterface,
   ProductionFanEntry,
+  ProductionPhotoVoteEntry,
   ProductionReview,
 } from '../../domain/repository/production-community.repository.interface';
 import {
@@ -13,6 +14,8 @@ import {
   ProductionCommentModel,
   ProductionFanDocument,
   ProductionFanModel,
+  ProductionPhotoVoteDocument,
+  ProductionPhotoVoteModel,
   ProductionReviewDocument,
   ProductionReviewModel,
 } from '../schemas/production-community.schema';
@@ -56,6 +59,8 @@ export class ProductionCommunityRepository
     private readonly reviewModel: Model<ProductionReviewDocument>,
     @InjectModel(ProductionCommentModel.modelName)
     private readonly commentModel: Model<ProductionCommentDocument>,
+    @InjectModel(ProductionPhotoVoteModel.modelName)
+    private readonly photoVoteModel: Model<ProductionPhotoVoteDocument>,
   ) {}
 
   // --- Fans --------------------------------------------------------------------
@@ -319,6 +324,7 @@ export class ProductionCommunityRepository
     await this.fanModel.deleteMany(query, { session });
     await this.reviewModel.deleteMany(query, { session });
     await this.commentModel.deleteMany(query, { session });
+    await this.photoVoteModel.deleteMany(query, { session });
   }
 
   async deleteCommentsByItems(
@@ -332,5 +338,61 @@ export class ProductionCommunityRepository
       { production: oid(productionId), item: { $in: ids } },
       { session },
     );
+  }
+
+  async deletePhotoVotesByItems(
+    productionId: string,
+    itemIds: string[],
+    session?: ClientSession,
+  ): Promise<void> {
+    const ids = validIds(itemIds);
+    if (ids.length === 0) return;
+    await this.photoVoteModel.deleteMany(
+      { production: oid(productionId), item: { $in: ids } },
+      { session },
+    );
+  }
+
+  // --- Love It -------------------------------------------------------------------
+
+  async setPhotoVote(
+    productionId: string,
+    itemId: string,
+    userId: string,
+    vote: string,
+  ): Promise<void> {
+    await this.photoVoteModel.updateOne(
+      { item: oid(itemId), user: oid(userId) },
+      {
+        $set: { vote },
+        $setOnInsert: { production: oid(productionId) },
+      },
+      { upsert: true },
+    );
+  }
+
+  async removePhotoVote(itemId: string, userId: string): Promise<void> {
+    await this.photoVoteModel.deleteOne({
+      item: oid(itemId),
+      user: oid(userId),
+    });
+  }
+
+  async findPhotoVotes(
+    itemIds: string[],
+    userId?: string,
+  ): Promise<ProductionPhotoVoteEntry[]> {
+    const ids = validIds(itemIds);
+    if (ids.length === 0) return [];
+    const docs = await this.photoVoteModel
+      .find({ item: { $in: ids }, ...(userId ? { user: oid(userId) } : {}) })
+      .sort({ updatedAt: -1 })
+      .lean();
+    return docs.map((doc: any) => ({
+      item: doc.item.toString(),
+      user: doc.user.toString(),
+      vote: doc.vote,
+      updatedAt: doc.updatedAt,
+    }));
   }
 }

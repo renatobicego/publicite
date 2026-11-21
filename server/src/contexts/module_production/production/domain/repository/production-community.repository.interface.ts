@@ -29,6 +29,14 @@ export interface ProductionComment {
   updatedAt: Date;
 }
 
+/** Voto de Love It de un usuario sobre una foto. */
+export interface ProductionPhotoVoteEntry {
+  item: string;
+  user: string;
+  vote: string;
+  updatedAt: Date;
+}
+
 /** Fans, reseñas y comentarios de Mis Producciones (§6). */
 export interface ProductionCommunityRepositoryInterface {
   // Fans (FAN-01)
@@ -105,12 +113,32 @@ export interface ProductionCommunityRepositoryInterface {
     limit: number,
   ): Promise<{ comments: ProductionComment[]; total: number }>;
 
+  // Love It
+  /** Guarda o cambia el voto del usuario sobre la foto. */
+  setPhotoVote(
+    productionId: string,
+    itemId: string,
+    userId: string,
+    vote: string,
+  ): Promise<void>;
+  removePhotoVote(itemId: string, userId: string): Promise<void>;
+  /** Votos sobre estas fotos; con `userId`, sólo los de ese usuario. */
+  findPhotoVotes(
+    itemIds: string[],
+    userId?: string,
+  ): Promise<ProductionPhotoVoteEntry[]>;
+
   // Cascada (RNF-05)
   deleteByProduction(
     productionId: string,
     session?: ClientSession,
   ): Promise<void>;
   deleteCommentsByItems(
+    productionId: string,
+    itemIds: string[],
+    session?: ClientSession,
+  ): Promise<void>;
+  deletePhotoVotesByItems(
     productionId: string,
     itemIds: string[],
     session?: ClientSession,

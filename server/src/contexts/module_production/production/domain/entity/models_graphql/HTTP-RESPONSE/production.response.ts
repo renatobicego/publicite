@@ -2,6 +2,7 @@ import { Field, Float, ID, Int, ObjectType } from '@nestjs/graphql';
 
 import {
   ProductionBehaviourType,
+  ProductionCollectionType,
   ProductionFileType,
   ProductionItemKind,
   ProductionLockReason,
@@ -395,6 +396,30 @@ export class ProductionItemResponse {
       'Sólo carpetas, al listar un nivel: hasta 9 elementos de adentro para la vista previa',
   })
   folderPreview?: ProductionFolderPreviewResponse[] | null;
+
+  @Field(() => ProductionCollectionType, {
+    nullable: true,
+    description: 'Sólo carpetas: tipo de colección; null = carpeta común',
+  })
+  collectionType?: ProductionCollectionType | null;
+
+  @Field(() => Boolean, {
+    nullable: true,
+    description: 'Sólo carpetas: si el álbum tiene Love It',
+  })
+  loveItEnabled?: boolean | null;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'Sólo carpetas: sinopsis o texto de la colección',
+  })
+  description?: string | null;
+
+  @Field(() => ID, {
+    nullable: true,
+    description: 'Sólo carpetas: foto de adentro usada como afiche o tapa',
+  })
+  coverItem?: string | null;
 
   @Field(() => ProductionModerationStatus, {
     nullable: true,

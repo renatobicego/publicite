@@ -7,6 +7,8 @@ import {
 import { InjectConnection } from '@nestjs/mongoose';
 import { ClientSession, Connection, Types } from 'mongoose';
 
+import { fetchUploadedFileSize } from 'src/contexts/module_shared/storage/uploaded-file-size';
+
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { formatBytes } from 'src/contexts/module_shared/production-limits/production.limits.config';
 import { UserServiceInterface } from 'src/contexts/module_user/user/domain/service/user.service.interface';
@@ -20,6 +22,7 @@ import {
 } from '../../domain/entity/production-item.entity';
 import {
   ProductionBehaviourType,
+  ProductionCollectionType,
   ProductionFileType,
   ProductionItemKind,
   ProductionLockReason,
@@ -569,10 +572,54 @@ export class ProductionService implements ProductionServiceInterface {
       userId,
       'canEditContent',
     );
-    const updated = await this.itemRepository.updateById(itemId, {
+    const folder = item as ProductionFolder;
+    const fields: Record<string, any> = {
       name: requireNonEmpty(request.name, 'El nombre de la carpeta'),
-    });
+    };
+    if (request.collectionType !== undefined) {
+      fields.collectionType = request.collectionType ?? null;
+    }
+    if (request.description !== undefined) {
+      fields.description = (request.description ?? '').trim();
+    }
+    // Love It existe sólo en los álbumes: si la carpeta deja de ser álbum se
+    // apaga (los votos quedan guardados en cada foto).
+    const nextCollection =
+      request.collectionType !== undefined
+        ? request.collectionType ?? null
+        : folder.getCollectionType;
+    const wantsLoveIt = request.loveItEnabled ?? folder.isLoveItEnabled;
+    if (request.loveItEnabled && nextCollection !== ProductionCollectionType.album) {
+      throw new BadRequestException('Love It sólo se puede activar en un álbum');
+    }
+    fields.loveItEnabled =
+      nextCollection === ProductionCollectionType.album && wantsLoveIt;
+    if (request.coverItemId !== undefined) {
+      fields.coverItem = request.coverItemId
+        ? await this.resolveCoverItem(itemId, request.coverItemId)
+        : null;
+    }
+
+    const updated = await this.itemRepository.updateById(itemId, fields);
     return this.buildItemView(production, updated!, role);
+  }
+
+  /** El afiche o la tapa tiene que ser una foto que esté dentro de la carpeta. */
+  private async resolveCoverItem(
+    folderId: string,
+    coverItemId: string,
+  ): Promise<Types.ObjectId> {
+    const cover = await this.itemRepository.findById(coverItemId);
+    if (
+      !(cover instanceof ProductionFile) ||
+      cover.getParent !== folderId ||
+      cover.getFileType !== ProductionFileType.photo
+    ) {
+      throw new BadRequestException(
+        'El afiche tiene que ser una foto de esta carpeta',
+      );
+    }
+    return new Types.ObjectId(coverItemId);
   }
 
   async uploadFile(
@@ -587,10 +634,19 @@ export class ProductionService implements ProductionServiceInterface {
     );
     await this.assertValidParent(production.getId!, request.parentId);
 
-    const sizeBytes =
+    const declaredBytes =
       typeof request.sizeBytes === 'number' && request.sizeBytes > 0
         ? Math.floor(request.sizeBytes)
         : 0;
+    // El peso que cuenta para el cupo es el real del CDN; el del cliente queda
+    // de respaldo si no se puede consultar.
+    const realBytes = await fetchUploadedFileSize(request.key);
+    if (realBytes !== null && realBytes !== declaredBytes) {
+      this.logger.warn(
+        `Upload size mismatch for key ${request.key}: declared ${declaredBytes}, real ${realBytes}`,
+      );
+    }
+    const sizeBytes = realBytes ?? declaredBytes;
 
     const id = await this.createCountedItem(
       production,
@@ -602,7 +658,7 @@ export class ProductionService implements ProductionServiceInterface {
           'archivo',
           session,
         ).then((fileName) =>
-          this.factory.createFile(request, fileName, userId),
+          this.factory.createFile({ ...request, sizeBytes }, fileName, userId),
         ),
       // Sólo los archivos consumen almacenamiento (los artículos no, RNF).
       (session) => this.reserveStorage(production, sizeBytes, session),

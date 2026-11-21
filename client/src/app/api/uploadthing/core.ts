@@ -63,7 +63,9 @@ export const ourFileRouter = {
       return { uploadedBy: metadata.userId };
     }),
   // Archivos de un blog de Mis Producciones: además de imagen/video/audio/PDF
-  // acepta documentos de Office y OpenDocument. El cliente sube de a un archivo
+  // acepta documentos de Office y OpenDocument. Los topes son técnicos (un
+  // video de hasta 8 GB alcanza para una película): lo que limita de verdad es
+  // el almacenamiento del plan más los packs, que valida el server. El cliente sube de a un archivo
   // por llamada (ver `ProductionStaffToolbar`), así que `maxFileCount` no limita
   // cuántos se pueden elegir a la vez.
   // `awaitServerData: false`: la subida termina apenas UploadThing guarda el
@@ -71,33 +73,33 @@ export const ourFileRouter = {
   // el cliente use). Si no, cada archivo queda esperando ese callback.
   productionFileUploader: f(
     {
-      image: { maxFileSize: "8MB", maxFileCount: 1 },
-      video: { maxFileSize: "32MB", maxFileCount: 1 },
-      audio: { maxFileSize: "16MB", maxFileCount: 1 },
-      pdf: { maxFileSize: "16MB", maxFileCount: 1 },
-      "application/msword": { maxFileSize: "16MB", maxFileCount: 1 },
+      image: { maxFileSize: "64MB", maxFileCount: 1 },
+      video: { maxFileSize: "8GB", maxFileCount: 1 },
+      audio: { maxFileSize: "512MB", maxFileCount: 1 },
+      pdf: { maxFileSize: "256MB", maxFileCount: 1 },
+      "application/msword": { maxFileSize: "256MB", maxFileCount: 1 },
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
-        maxFileSize: "16MB",
+        maxFileSize: "256MB",
         maxFileCount: 1,
       },
-      "application/vnd.ms-excel": { maxFileSize: "16MB", maxFileCount: 1 },
+      "application/vnd.ms-excel": { maxFileSize: "256MB", maxFileCount: 1 },
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
-        maxFileSize: "16MB",
+        maxFileSize: "256MB",
         maxFileCount: 1,
       },
-      "application/vnd.ms-powerpoint": { maxFileSize: "16MB", maxFileCount: 1 },
+      "application/vnd.ms-powerpoint": { maxFileSize: "256MB", maxFileCount: 1 },
       "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-        { maxFileSize: "16MB", maxFileCount: 1 },
+        { maxFileSize: "256MB", maxFileCount: 1 },
       "application/vnd.oasis.opendocument.text": {
-        maxFileSize: "16MB",
+        maxFileSize: "256MB",
         maxFileCount: 1,
       },
       "application/vnd.oasis.opendocument.spreadsheet": {
-        maxFileSize: "16MB",
+        maxFileSize: "256MB",
         maxFileCount: 1,
       },
       "application/vnd.oasis.opendocument.presentation": {
-        maxFileSize: "16MB",
+        maxFileSize: "256MB",
         maxFileCount: 1,
       },
     },

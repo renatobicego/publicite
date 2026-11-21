@@ -2,6 +2,7 @@ import { Field, Float, ID, InputType, Int } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsLatitude,
@@ -15,7 +16,11 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { ProductionFileType, ProductionVisibility } from '../../enum/production.enums';
+import {
+  ProductionCollectionType,
+  ProductionFileType,
+  ProductionVisibility,
+} from '../../enum/production.enums';
 
 @InputType({ description: 'Dorso de la postal (BLG-08)' })
 export class ProductionPostcardInput {
@@ -91,6 +96,22 @@ export class ProductionFolderRequest {
   @IsOptional()
   @IsEnum(ProductionVisibility)
   visibility?: ProductionVisibility;
+
+  @Field(() => ProductionCollectionType, {
+    nullable: true,
+    description: 'Colección (álbum, película, serie, disco); vacío = carpeta común',
+  })
+  @IsOptional()
+  @IsEnum(ProductionCollectionType)
+  collectionType?: ProductionCollectionType;
+
+  @Field(() => Boolean, {
+    nullable: true,
+    description: 'Love It (sólo álbumes)',
+  })
+  @IsOptional()
+  @IsBoolean()
+  loveItEnabled?: boolean;
 }
 
 @InputType()
@@ -100,6 +121,38 @@ export class ProductionFolderUpdateRequest {
   @IsNotEmpty({ message: 'El nombre de la carpeta es obligatorio' })
   @MaxLength(120)
   name: string;
+
+  // Los campos de colección son opcionales: si no llegan, no se tocan. Un
+  // `collectionType` en null vuelve la carpeta a común.
+  @Field(() => ProductionCollectionType, {
+    nullable: true,
+    description: 'Colección; null = carpeta común; sin enviar = no cambia',
+  })
+  @IsOptional()
+  @IsEnum(ProductionCollectionType)
+  collectionType?: ProductionCollectionType | null;
+
+  @Field(() => Boolean, { nullable: true, description: 'Love It (sólo álbumes)' })
+  @IsOptional()
+  @IsBoolean()
+  loveItEnabled?: boolean;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'Sinopsis o texto de la colección',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(3000)
+  description?: string;
+
+  @Field(() => ID, {
+    nullable: true,
+    description: 'Foto de la carpeta usada como afiche o tapa; null = ninguna',
+  })
+  @IsOptional()
+  @IsMongoId()
+  coverItemId?: string | null;
 }
 
 @InputType({ description: 'Archivo ya subido a UploadThing (BLG-08..12)' })
@@ -123,7 +176,9 @@ export class ProductionFileRequest {
   @MaxLength(300)
   key: string;
 
-  @Field(() => Int, {
+  // Float: un Int de GraphQL es de 32 bits y no alcanza para archivos de más
+  // de 2 GB (un video puede pesar hasta 8 GB).
+  @Field(() => Float, {
     nullable: true,
     description: 'Tamaño del archivo en bytes (cupo de almacenamiento por usuario)',
   })

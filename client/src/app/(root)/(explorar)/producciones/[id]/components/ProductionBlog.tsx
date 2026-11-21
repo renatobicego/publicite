@@ -29,6 +29,7 @@ import {
   FaEye,
   FaFlag,
   FaFileMedical,
+  FaFilm,
   FaFolderOpen,
   FaFolderPlus,
   FaImages,
@@ -57,11 +58,14 @@ import {
   toastifyWarn,
 } from "@/utils/functions/toastify";
 import {
+  ProductionCollectionType,
   ProductionItemKind,
   ProductionItemResponse,
   ProductionItemsResult,
   ProductionLockReason,
 } from "@/types/productionTypes";
+import { useUserData } from "@/app/(root)/providers/userDataProvider";
+import { LOVE_IT_VOTES, isPhotoItem, voteMeta } from "../../productionCollections";
 import {
   getProductionItems,
   deleteProduction,
@@ -115,6 +119,8 @@ import DeleteBlogModal from "./DeleteBlogModal";
 import ProductionMapModal from "./ProductionMapModal";
 import ReceivedReportsModal from "./ReceivedReportsModal";
 import useProductionUpload from "./useProductionUpload";
+import CollectionHeader from "./CollectionHeader";
+import useLoveIt from "./useLoveIt";
 
 const VIEW_MODE_STORAGE_KEY = "production-view-mode";
 // Cuadrícula ordenada (todos los recuadros iguales) o libre (cada foto con su
@@ -216,6 +222,7 @@ const ProductionBlog = ({
   }>({ stack: [initialParentId], index: 0 });
 
   const production = data.production;
+  const { userIdLogged } = useUserData();
   const isStaffViewer = !!production.viewer?.canEdit;
   // Vista previa: el staff ve el blog sin sus controles, como un visitante.
   const [previewMode, setPreviewMode] = useState(
@@ -268,7 +275,12 @@ const ProductionBlog = ({
       // Sin acceso al almacenamiento: vale sólo para esta visita.
     }
   };
-  const orderedGrid = viewMode === "grid" && gridStyle === "ordered";
+  // Colección abierta (la carpeta actual). Un álbum va siempre en cuadrícula
+  // ordenada y con cada foto entera.
+  const folder = currentParentId ? data.parent ?? null : null;
+  const isAlbum = folder?.collectionType === ProductionCollectionType.album;
+  const orderedGrid =
+    viewMode === "grid" && (gridStyle === "ordered" || isAlbum);
 
   // Selección múltiple (staff) y destino del "Mover".
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -280,7 +292,53 @@ const ProductionBlog = ({
   const [internalDrag, setInternalDrag] = useState(false);
   const [fileDropActive, setFileDropActive] = useState(false);
   const fileDragDepth = useRef(0);
-  const { uploadFiles, uploadProgress } = useProductionUpload(production._id);
+  const { uploadFiles, uploadProgress } = useProductionUpload(
+    production._id,
+    !!userIdLogged && production.creator === userIdLogged,
+  );
+
+  // Love It del álbum abierto: mis votos y, para el staff, los de todos.
+  const loveItFolderId =
+    isAlbum && folder?.loveItEnabled ? folder._id : undefined;
+  const loveIt = useLoveIt(loveItFolderId, {
+    canVote: !!userIdLogged,
+    canViewResults: canManageAccess,
+  });
+  const loveItBadge = (item: ProductionItemResponse) => {
+    if (!loveItFolderId || !isPhotoItem(item)) return undefined;
+    const result = loveIt.results.get(item._id);
+    if (result) {
+      const total =
+        result.fanCount + result.likeCount + result.maybeCount + result.noCount;
+      if (total === 0) return undefined;
+      const detail = LOVE_IT_VOTES.map(
+        (option) =>
+          `${option.label}: ${
+            result[
+              `${option.vote}Count` as
+                | "fanCount"
+                | "likeCount"
+                | "maybeCount"
+                | "noCount"
+            ]
+          }`,
+      ).join(" · ");
+      return (
+        <span
+          className="shrink-0 rounded-full bg-pink-100 px-1.5 text-[11px] font-semibold text-pink-700"
+          title={detail}
+        >
+          💖 {result.fanCount}
+        </span>
+      );
+    }
+    const mine = voteMeta(loveIt.votes.get(item._id));
+    return mine ? (
+      <span className="shrink-0 text-sm" title={`Tu voto: ${mine.label}`}>
+        {mine.emoji}
+      </span>
+    ) : undefined;
+  };
 
   // Se incrementa al reseñar para que la lista de reseñas se vuelva a pedir.
   const [communityVersion, setCommunityVersion] = useState(0);
@@ -607,9 +665,17 @@ const ProductionBlog = ({
             {
               key: "album",
               label: "Álbum de fotos",
-              description: "Una carpeta con las fotos que elijas",
+              description: "Fotos y videos, con Love It para votarlas",
               icon: <FaImages />,
               onAction: () => toolbarRef.current?.openAlbum(),
+            },
+            {
+              key: "collection",
+              label: "Película, serie o disco",
+              description: "Una colección de videos o audios con su reproductor",
+              icon: <FaFilm />,
+              onAction: () =>
+                toolbarRef.current?.openFolder(ProductionCollectionType.movie),
             },
             {
               key: "upload",
@@ -948,6 +1014,23 @@ const ProductionBlog = ({
         )}
       </div>
 
+      {/* Colección abierta: álbum (con Love It), película, serie o disco */}
+      {folder && !loading && (
+        <CollectionHeader
+          key={folder._id}
+          folder={folder}
+          items={data.items}
+          canEdit={canEdit}
+          canViewResults={canManageAccess}
+          isLoggedIn={!!userIdLogged}
+          onBlocked={previewBlocked}
+          onChanged={refreshLevel}
+          votes={loveIt.votes}
+          onVote={loveIt.vote}
+          onResultsClosed={loveIt.reloadResults}
+        />
+      )}
+
       {/* Búsqueda, filtros y tipo de vista del nivel */}
       <div className="flex flex-wrap items-center gap-2">
         <Input
@@ -1031,7 +1114,12 @@ const ProductionBlog = ({
           <Button
             isIconOnly
             aria-label="Cuadrícula libre: cada foto con su tamaño"
-            title="Cuadrícula libre"
+            title={
+              isAlbum
+                ? "En los álbumes las fotos van todas del mismo tamaño"
+                : "Cuadrícula libre"
+            }
+            isDisabled={isAlbum}
             variant={viewMode === "grid" && !orderedGrid ? "solid" : "flat"}
             color={viewMode === "grid" && !orderedGrid ? "primary" : "default"}
             onPress={() => changeGrid("free")}
@@ -1242,6 +1330,8 @@ const ProductionBlog = ({
                 item={item}
                 layout={viewMode}
                 uniform={orderedGrid}
+                fit={isAlbum ? "contain" : "cover"}
+                badge={loveItBadge(item)}
                 compact={iconSize < ICON_SIZE.compact}
                 onOpen={handleOpen}
                 canEdit={canEdit}

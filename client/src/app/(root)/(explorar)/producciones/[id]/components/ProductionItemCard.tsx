@@ -46,6 +46,7 @@ import ItemVisibilityControl from "./ItemVisibilityControl";
 import TicketCheckoutModal from "./TicketCheckoutModal";
 import TicketManagerModal from "./TicketManagerModal";
 import TicketSalesModal from "./TicketSalesModal";
+import { collectionMeta } from "../../productionCollections";
 import ProductionItemActions from "./ProductionItemActions";
 
 interface Props {
@@ -71,6 +72,13 @@ interface Props {
    * la misma altura de texto). Sin esto cada foto conserva su alto.
    */
   uniform?: boolean;
+  /**
+   * Cómo entra la foto en el recuadro de la cuadrícula ordenada: recortada
+   * (`cover`) o entera, con bordes (`contain`, la de los álbumes).
+   */
+  fit?: "cover" | "contain";
+  /** Marca junto al nombre (p. ej. el voto de Love It o sus resultados). */
+  badge?: React.ReactNode;
   /** Staff: selección múltiple para mover. */
   selected?: boolean;
   onToggleSelect?: (item: ProductionItemResponse) => void;
@@ -113,6 +121,8 @@ const ProductionItemCard = ({
   layout = "grid",
   compact = false,
   uniform = false,
+  fit = "cover",
+  badge,
   selected = false,
   onToggleSelect,
   onMove,
@@ -122,6 +132,16 @@ const ProductionItemCard = ({
   onDropOnFolder,
 }: Props) => {
   const locked = !item.access?.canViewContent;
+  const collection = collectionMeta(item.collectionType);
+  const collectionBadge = collection && (
+    <span
+      className="shrink-0 text-sm"
+      title={collection.label}
+      aria-label={collection.label}
+    >
+      {collection.emoji}
+    </span>
+  );
   // "Sólo yo" (propio o heredado): sólo le llega al staff, que lo ve marcado.
   const privateBadge = isOnlyMe(item.effectiveVisibility) && (
     <FaUserLock
@@ -292,7 +312,9 @@ const ProductionItemCard = ({
             <span className="flex min-w-0 flex-1 flex-col">
               <span className="flex items-center gap-1.5 text-sm font-medium">
                 <span className="truncate">{item.name}</span>
+                {collectionBadge}
                 {privateBadge}
+                {badge}
               </span>
               <span className="truncate text-xs text-default-500">
                 {itemTypeLabel(item)}
@@ -317,7 +339,7 @@ const ProductionItemCard = ({
             className={`w-full ${uniform ? "h-full" : ""} ${compact ? "gap-2" : "gap-4"} ease-in-out hover:shadow md:hover:shadow-md !transition-shadow duration-500 !opacity-100`}
           >
             <CardHeader className="w-full pb-0 max-md:px-1 md:px-2 lg:px-3">
-              {renderPreview(item, locked, uniform)}
+              {renderPreview(item, locked, uniform, fit)}
             </CardHeader>
             <CardBody
               className={`pt-0 flex flex-col gap-1 max-md:px-1 md:px-2 lg:px-3 ${
@@ -328,7 +350,9 @@ const ProductionItemCard = ({
                 className={`flex items-center gap-1.5 ${compact ? "text-sm" : ""}`}
               >
                 <span className="line-clamp-1">{item.name}</span>
+                {collectionBadge}
                 {privateBadge}
+                {badge}
               </h6>
               {(item.fileName || uniform) && (
                 <p className="text-light-text text-xs lg:text-small 2xl:text-sm line-clamp-1 min-h-[1lh]">
@@ -544,6 +568,7 @@ const renderPreview = (
   item: ProductionItemResponse,
   locked: boolean,
   uniform = false,
+  fit: "cover" | "contain" = "cover",
 ) => {
   if (item.kind === ProductionItemKind.folder) {
     const preview = item.folderPreview ?? [];
@@ -586,7 +611,9 @@ const renderPreview = (
             src={resolveProductionFileUrl(item.key)}
             alt={item.name}
             loading="lazy"
-            className="h-full w-full object-cover"
+            className={`h-full w-full ${
+              fit === "contain" ? "object-contain" : "object-cover"
+            }`}
           />
         </div>
       );

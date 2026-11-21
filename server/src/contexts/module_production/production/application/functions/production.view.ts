@@ -2,6 +2,7 @@ import { Production } from '../../domain/entity/production.entity';
 import {
   ProductionArticle,
   ProductionFile,
+  ProductionFolder,
   ProductionItem,
 } from '../../domain/entity/production-item.entity';
 import {
@@ -147,6 +148,11 @@ export function toItemResponse(
   } else if (item instanceof ProductionArticle) {
     response.fileName = item.getFileName;
     response.blocks = canView ? item.getBlocks : null;
+  } else if (item instanceof ProductionFolder) {
+    response.collectionType = item.getCollectionType;
+    response.loveItEnabled = item.isLoveItEnabled;
+    response.description = canView ? item.getDescription : null;
+    response.coverItem = canView ? item.getCoverItem : null;
   }
 
   return response;

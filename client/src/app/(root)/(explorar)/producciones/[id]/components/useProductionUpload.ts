@@ -2,7 +2,11 @@
 import { useCallback, useRef, useState } from "react";
 import { useUploadThing } from "@/utils/uploadThing";
 import { toastifyError, toastifySuccess } from "@/utils/functions/toastify";
-import { uploadFile } from "@/app/server/productionActions";
+import {
+  getProductionLimits,
+  uploadFile,
+} from "@/app/server/productionActions";
+import { formatBytes } from "@/utils/functions/formatBytes";
 import { deleteFilesService } from "@/app/server/uploadThing";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import { ProductionFileType } from "@/types/productionTypes";
@@ -19,8 +23,13 @@ export interface ProductionUploadProgress {
 /**
  * Subida de archivos a un blog. La comparten el botón "Subir archivos" y el
  * arrastre desde el escritorio, así que el avance es uno solo.
+ *
+ * `isCreator`: quien sube es el dueño del plan contra el que cuenta el blog.
+ * Entonces se avisa ANTES de subir si el archivo no entra en su espacio (un
+ * video puede pesar varios GB y tardar mucho en subir para nada). En blogs de
+ * grupo sube un moderador con otro plan: ahí decide sólo el server.
  */
-const useProductionUpload = (productionId: string) => {
+const useProductionUpload = (productionId: string, isCreator = false) => {
   // Avance de la subida en curso (se puede elegir más de un archivo a la vez).
   const [uploadProgress, setUploadProgress] =
     useState<ProductionUploadProgress | null>(null);
@@ -90,6 +99,14 @@ const useProductionUpload = (productionId: string) => {
       busy.current = true;
       let uploadedCount = 0;
       try {
+        // Espacio libre del plan, para avisar antes de subir lo que no entra.
+        let availableBytes: number | null = null;
+        if (isCreator) {
+          const limits = await getProductionLimits();
+          if (!isProductionActionError(limits) && limits.storageLimitEnabled) {
+            availableBytes = limits.storageAvailableBytes;
+          }
+        }
         // De a uno: cada archivo valida su propio cupo en el backend, y si uno
         // falla los demás siguen.
         for (const [index, file] of files.entries()) {
@@ -98,7 +115,17 @@ const useProductionUpload = (productionId: string) => {
             total: files.length,
             percent: 0,
           });
+          if (availableBytes !== null && file.size > availableBytes) {
+            const message = `No tenés espacio suficiente: pesa ${formatBytes(
+              file.size
+            )} y te quedan ${formatBytes(
+              availableBytes
+            )}. Liberá espacio, mejorá tu plan o sumá un pack de almacenamiento.`;
+            toastifyError(files.length > 1 ? `${file.name}: ${message}` : message);
+            continue;
+          }
           const error = await uploadOne(file, parentId);
+          if (!error && availableBytes !== null) availableBytes -= file.size;
           if (error) {
             toastifyError(files.length > 1 ? `${file.name}: ${error}` : error);
           } else {
@@ -119,7 +146,7 @@ const useProductionUpload = (productionId: string) => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [productionId, startUpload]
+    [productionId, startUpload, isCreator]
   );
 
   return { uploadFiles, uploadProgress };

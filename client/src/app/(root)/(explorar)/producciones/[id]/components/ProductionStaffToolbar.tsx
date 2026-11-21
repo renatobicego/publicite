@@ -9,6 +9,9 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Select,
+  SelectItem,
+  Switch,
   useDisclosure,
 } from "@nextui-org/react";
 import {
@@ -24,6 +27,11 @@ import { isProductionActionError } from "@/utils/functions/productionErrorHandle
 import { PRODUCTIONS } from "@/utils/data/urls";
 import { PRODUCTION_FILE_ACCEPT } from "../../productionFiles";
 import { ProductionUploadProgress } from "./useProductionUpload";
+import { ProductionCollectionType } from "@/types/productionTypes";
+import { COLLECTION_TYPES } from "../../productionCollections";
+
+// Opción "carpeta común" del selector de tipo.
+const PLAIN_FOLDER = "folder";
 
 interface Props {
   productionId: string;
@@ -39,7 +47,8 @@ interface Props {
 
 /** Acciones de creación, también disponibles desde el súper botón Crear. */
 export interface ProductionStaffToolbarHandle {
-  openFolder: () => void;
+  /** Con `type`, la carpeta nueva arranca como esa colección. */
+  openFolder: (type?: ProductionCollectionType) => void;
   openAlbum: () => void;
   pickFiles: () => void;
   createArticle: () => void;
@@ -56,7 +65,11 @@ const ProductionStaffToolbar = forwardRef<
   const folderModal = useDisclosure();
   const albumModal = useDisclosure();
   const [folderName, setFolderName] = useState("");
+  const [folderType, setFolderType] = useState<ProductionCollectionType | null>(
+    null
+  );
   const [albumName, setAlbumName] = useState("");
+  const [albumLoveIt, setAlbumLoveIt] = useState(false);
   const [albumPhotos, setAlbumPhotos] = useState<File[]>([]);
   const albumInputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -69,7 +82,10 @@ const ProductionStaffToolbar = forwardRef<
   };
 
   useImperativeHandle(ref, () => ({
-    openFolder: folderModal.onOpen,
+    openFolder: (type?: ProductionCollectionType) => {
+      setFolderType(type ?? null);
+      folderModal.onOpen();
+    },
     openAlbum: albumModal.onOpen,
     pickFiles: () => fileInputRef.current?.click(),
     createArticle: goToCreateArticle,
@@ -82,7 +98,7 @@ const ProductionStaffToolbar = forwardRef<
       return;
     }
     if (albumPhotos.length === 0) {
-      toastifyError("Elegí al menos una foto");
+      toastifyError("Elegí al menos una foto o un video");
       return;
     }
     setBusy(true);
@@ -91,6 +107,8 @@ const ProductionStaffToolbar = forwardRef<
         productionId,
         parentId,
         name: albumName.trim(),
+        collectionType: ProductionCollectionType.album,
+        loveItEnabled: albumLoveIt,
       });
       if (isProductionActionError(folder)) {
         toastifyError(folder.error);
@@ -99,6 +117,7 @@ const ProductionStaffToolbar = forwardRef<
       const photos = albumPhotos;
       setAlbumName("");
       setAlbumPhotos([]);
+      setAlbumLoveIt(false);
       albumModal.onClose();
       onCreated();
       // La subida muestra su progreso en el botón "Subir archivos".
@@ -121,15 +140,19 @@ const ProductionStaffToolbar = forwardRef<
         productionId,
         parentId,
         name: folderName.trim(),
+        collectionType: folderType ?? undefined,
       });
       if (isProductionActionError(res)) {
         toastifyError(res.error);
         return;
       }
-      toastifySuccess("Carpeta creada");
+      toastifySuccess(folderType ? "Colección creada" : "Carpeta creada");
       setFolderName("");
       folderModal.onClose();
-      onCreated();
+      // Una colección se abre para empezar a cargarla.
+      if (folderType && onOpenFolder) onOpenFolder(res._id);
+      else onCreated();
+      setFolderType(null);
     } finally {
       setBusy(false);
     }
@@ -150,7 +173,10 @@ const ProductionStaffToolbar = forwardRef<
         <Button
           startContent={<FaFolderPlus />}
           variant="flat"
-          onPress={folderModal.onOpen}
+          onPress={() => {
+            setFolderType(null);
+            folderModal.onOpen();
+          }}
           isDisabled={busy}
         >
           Nueva carpeta
@@ -199,7 +225,9 @@ const ProductionStaffToolbar = forwardRef<
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader>Nueva carpeta</ModalHeader>
+              <ModalHeader>
+                {folderType ? "Nueva colección" : "Nueva carpeta"}
+              </ModalHeader>
               <ModalBody>
                 <Input
                   autoFocus
@@ -207,6 +235,33 @@ const ProductionStaffToolbar = forwardRef<
                   value={folderName}
                   onValueChange={setFolderName}
                 />
+                <Select
+                  label="Tipo"
+                  disallowEmptySelection
+                  selectedKeys={[folderType ?? PLAIN_FOLDER]}
+                  onSelectionChange={(keys) => {
+                    const key = Array.from(keys)[0] as string | undefined;
+                    setFolderType(
+                      !key || key === PLAIN_FOLDER
+                        ? null
+                        : (key as ProductionCollectionType)
+                    );
+                  }}
+                  description={
+                    COLLECTION_TYPES.find((option) => option.key === folderType)
+                      ?.description ??
+                    "Una carpeta común. Podés convertirla en colección después."
+                  }
+                >
+                  {[
+                    <SelectItem key={PLAIN_FOLDER}>📁 Carpeta común</SelectItem>,
+                    ...COLLECTION_TYPES.map((option) => (
+                      <SelectItem key={option.key}>
+                        {`${option.emoji} ${option.label}`}
+                      </SelectItem>
+                    )),
+                  ]}
+                </Select>
               </ModalBody>
               <ModalFooter>
                 <Button variant="light" onPress={onClose} isDisabled={busy}>
@@ -233,7 +288,7 @@ const ProductionStaffToolbar = forwardRef<
               <ModalHeader className="flex flex-col gap-1">
                 Nuevo álbum
                 <span className="text-xs font-normal text-default-500">
-                  Se crea una carpeta con las fotos que elijas.
+                  Fotos y videos, todos del mismo tamaño y enteros.
                 </span>
               </ModalHeader>
               <ModalBody>
@@ -252,16 +307,30 @@ const ProductionStaffToolbar = forwardRef<
                   {albumPhotos.length > 0
                     ? `${albumPhotos.length} ${
                         albumPhotos.length === 1
-                          ? "foto elegida"
-                          : "fotos elegidas"
+                          ? "archivo elegido"
+                          : "archivos elegidos"
                       } · cambiar`
-                    : "Elegir fotos"}
+                    : "Elegir fotos y videos"}
                 </Button>
+                <div className="flex items-start justify-between gap-4 rounded-xl border border-pink-200 bg-pink-50 p-3 dark:border-pink-900 dark:bg-pink-950/30">
+                  <div>
+                    <p className="text-sm font-semibold">💖 Activar Love It</p>
+                    <p className="text-xs text-default-600">
+                      Quien entra pasa las fotos una por una y vota cada una:
+                      Fan, Me gusta, Más o menos o No. Lo podés cambiar después.
+                    </p>
+                  </div>
+                  <Switch
+                    isSelected={albumLoveIt}
+                    onValueChange={setAlbumLoveIt}
+                    aria-label="Activar Love It"
+                  />
+                </div>
                 <input
                   ref={albumInputRef}
                   type="file"
                   multiple
-                  accept="image/*"
+                  accept="image/*,video/*"
                   className="hidden"
                   onChange={(event) => {
                     setAlbumPhotos(Array.from(event.target.files ?? []));

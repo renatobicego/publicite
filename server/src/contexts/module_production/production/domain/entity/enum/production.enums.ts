@@ -85,6 +85,42 @@ registerEnumType(ProductionFileType, {
   description: 'Foto (postal), video, escrito (PDF), audio o documento de Office',
 });
 
+/**
+ * Colección: una carpeta dedicada a algo específico, con su propia pantalla.
+ * `album` (fotos y videos, admite Love It), `movie` (una película con afiche y
+ * sinopsis), `series` (videos en orden, como capítulos) y `music` (audios en
+ * orden, como un disco). null = carpeta común.
+ */
+export enum ProductionCollectionType {
+  album = 'album',
+  movie = 'movie',
+  series = 'series',
+  music = 'music',
+}
+
+registerEnumType(ProductionCollectionType, {
+  name: 'ProductionCollectionType',
+  description:
+    'Colección: album (fotos y videos, con Love It), movie (película), series (videos en orden) o music (audios en orden)',
+});
+
+/**
+ * Voto de Love It sobre una foto de un álbum. Cada dirección es un voto:
+ * arriba `fan`, derecha `like` (Me gusta), abajo `maybe` (Más o menos) e
+ * izquierda `no`.
+ */
+export enum ProductionPhotoVote {
+  fan = 'fan',
+  like = 'like',
+  maybe = 'maybe',
+  no = 'no',
+}
+
+registerEnumType(ProductionPhotoVote, {
+  name: 'ProductionPhotoVote',
+  description: 'Love It: fan (arriba), like (derecha), maybe (abajo), no (izquierda)',
+});
+
 /** Categorías de la Estantería / Board de Links (BLG-03). */
 export enum ProductionShelfCategory {
   movies = 'movies',

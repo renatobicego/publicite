@@ -98,6 +98,8 @@ export class ProductionFactory implements ProductionFactoryInterface {
       name: requireNonEmpty(request.name, 'El nombre de la carpeta'),
       visibility: request.visibility ?? null,
       createdBy: userId,
+      collectionType: request.collectionType ?? null,
+      loveItEnabled: request.loveItEnabled ?? false,
     });
   }
 

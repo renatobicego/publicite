@@ -98,6 +98,10 @@ const PRODUCTION_ITEM_FIELDS = gql`
     }
     visibility
     effectiveVisibility
+    collectionType
+    loveItEnabled
+    description
+    coverItem
     moderationStatus
     createdAt
     updatedAt
@@ -1293,6 +1297,55 @@ export const setProductionFeaturedMutation = gql`
   mutation SetProductionFeatured($productionId: ID!, $isFeatured: Boolean!) {
     setProductionFeatured(productionId: $productionId, isFeatured: $isFeatured) {
       ...ProductionFields
+    }
+  }
+`;
+
+// --- Love It ---
+
+export const setProductionPhotoVoteMutation = gql`
+  mutation SetProductionPhotoVote($itemId: ID!, $vote: ProductionPhotoVote) {
+    setProductionPhotoVote(itemId: $itemId, vote: $vote) {
+      item
+      vote
+    }
+  }
+`;
+
+export const getMyProductionPhotoVotesQuery = gql`
+  query GetMyProductionPhotoVotes($folderId: ID!) {
+    getMyProductionPhotoVotes(folderId: $folderId) {
+      item
+      vote
+    }
+  }
+`;
+
+export const getProductionLoveItResultsQuery = gql`
+  ${PRODUCTION_OWNER_INFO_FIELDS}
+  query GetProductionLoveItResults($folderId: ID!) {
+    getProductionLoveItResults(folderId: $folderId) {
+      folder
+      votersCount
+      votesCount
+      photos {
+        item
+        name
+        fileName
+        key
+        fanCount
+        likeCount
+        maybeCount
+        noCount
+        votes {
+          user
+          userInfo {
+            ...ProductionOwnerInfoFields
+          }
+          vote
+          updatedAt
+        }
+      }
     }
   }
 `;

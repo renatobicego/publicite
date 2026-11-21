@@ -109,3 +109,38 @@ export const ProductionCommentModel = model<ProductionCommentDocument>(
   'ProductionComment',
   ProductionCommentSchema,
 );
+
+// --- Love It: votos sobre las fotos de un álbum --------------------------------
+
+export interface ProductionPhotoVoteDocument extends Document {
+  production: Types.ObjectId;
+  /** Foto votada. El voto queda en la foto aunque se mueva de carpeta. */
+  item: Types.ObjectId;
+  user: Types.ObjectId;
+  vote: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export const ProductionPhotoVoteSchema = new Schema<ProductionPhotoVoteDocument>(
+  {
+    production: {
+      type: Schema.Types.ObjectId,
+      ref: 'Production',
+      required: true,
+    },
+    item: { type: Schema.Types.ObjectId, ref: 'ProductionItem', required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    vote: { type: String, required: true },
+  },
+  { collection: 'productionphotovotes', timestamps: true },
+);
+
+// Un voto por usuario y foto (se puede cambiar).
+ProductionPhotoVoteSchema.index({ item: 1, user: 1 }, { unique: true });
+ProductionPhotoVoteSchema.index({ production: 1 });
+
+export const ProductionPhotoVoteModel = model<ProductionPhotoVoteDocument>(
+  'ProductionPhotoVote',
+  ProductionPhotoVoteSchema,
+);

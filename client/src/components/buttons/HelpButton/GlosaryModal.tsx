@@ -263,8 +263,29 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
               <li>
                 Súper botón Crear (+ Crear, abajo a la derecha): primero
                 &quot;Crear nuevo blog&quot;; dentro de tu blog, crear ahí
-                mismo una carpeta, un artículo, un álbum de fotos o subir
-                archivos.
+                mismo una carpeta, un artículo, un álbum de fotos, una
+                película, serie o disco, o subir archivos.
+              </li>
+              <li>
+                Colecciones: una carpeta puede ser un Álbum (fotos y videos del
+                mismo tamaño), una Película (video grande con afiche y
+                sinopsis), una Serie de videos (capítulos en orden) o un Disco
+                (tapa y lista de temas). Se elige al crearla o con
+                &quot;Configurar&quot; dentro de la carpeta.
+              </li>
+              <li>
+                Love It 💖: en un álbum con Love It activado pasas las fotos una
+                por una a pantalla completa y votas cada una llevándola hacia
+                una hora del reloj: arriba (12 h) Fan, derecha (15 h) Me gusta,
+                abajo (18 h) Más o menos e izquierda (21 h) No. En el celular
+                deslizas la foto; en la compu también puedes usar las flechas.
+                Puedes cambiar tu voto cuando quieras. El dueño del blog ve qué
+                votó cada persona en &quot;Resultados Love It&quot;.
+              </li>
+              <li>
+                Archivos grandes: un video puede pesar hasta 8 GB (fotos 64 MB,
+                audios 512 MB, PDF y documentos 256 MB). Lo que limita es el
+                almacenamiento de tu plan más los packs.
               </li>
               <li>
                 Almacenamiento: el espacio de tu plan es uno solo y suma los

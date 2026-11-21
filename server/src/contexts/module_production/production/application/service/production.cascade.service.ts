@@ -134,6 +134,11 @@ export class ProductionCascadeService {
       deletedIds,
       session,
     );
+    await this.communityRepository.deletePhotoVotesByItems(
+      productionId,
+      deletedIds,
+      session,
+    );
     await this.reportRepository.deleteByItems(productionId, deletedIds, session);
 
     const ticketIds = await this.ticketRepository.deleteByTargets(

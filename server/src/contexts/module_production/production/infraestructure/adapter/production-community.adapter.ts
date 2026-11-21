@@ -7,6 +7,7 @@ import {
   ProductionReviewInput,
   ProductionReviewUpdateInput,
 } from '../../domain/entity/models_graphql/HTTP-REQUEST/production-community.request';
+import { ProductionPhotoVote } from '../../domain/entity/enum/production.enums';
 
 @Injectable()
 export class ProductionCommunityAdapter
@@ -119,5 +120,21 @@ export class ProductionCommunityAdapter
       page,
       limit,
     );
+  }
+
+  setProductionPhotoVote(
+    itemId: string,
+    vote: ProductionPhotoVote | null,
+    userId: string,
+  ) {
+    return this.communityService.setProductionPhotoVote(itemId, vote, userId);
+  }
+
+  getMyProductionPhotoVotes(folderId: string, userId: string) {
+    return this.communityService.getMyProductionPhotoVotes(folderId, userId);
+  }
+
+  getProductionLoveItResults(folderId: string, userId: string) {
+    return this.communityService.getProductionLoveItResults(folderId, userId);
   }
 }

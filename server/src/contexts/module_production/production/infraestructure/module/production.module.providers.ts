@@ -34,6 +34,7 @@ import { ProductionSeudoBaseAdapter } from '../adapter/production-seudobase.adap
 import {
   ProductionCommentModel,
   ProductionFanModel,
+  ProductionPhotoVoteModel,
   ProductionReviewModel,
 } from '../schemas/production-community.schema';
 import { ProductionCommunityRepository } from '../repository/production-community.repository';
@@ -76,6 +77,10 @@ export const PRODUCTION_MODELS: ModelDefinition[] = [
     schema: ProductionCommentModel.schema,
   },
   { name: ProductionReportModel.modelName, schema: ProductionReportModel.schema },
+  {
+    name: ProductionPhotoVoteModel.modelName,
+    schema: ProductionPhotoVoteModel.schema,
+  },
 ];
 
 export const PRODUCTION_PROVIDERS: Provider[] = [

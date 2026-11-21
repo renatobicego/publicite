@@ -203,9 +203,13 @@ necesidades no cuentan). Es la **única dimensión por peso** del sistema; todo 
   Acumulativo entre suscripciones activas (igual que `filesPerBlogCount`). Valores
   de referencia: `104857600` (100 MB) gratuito, `1073741824` (1 GB) premium. Si el
   plan no lo define, se usa el piso gratuito por env var.
-- **Tamaño del archivo:** lo informa el **cliente** (`file.size` → `ProductionFileRequest.sizeBytes`),
-  se persiste en `ProductionFile.sizeBytes`. **Se confía en ese valor** (no se verifica
-  contra UploadThing). Si una feature necesita rigor, verificar el tamaño real en el server.
+- **Tamaño del archivo:** el cliente lo informa (`file.size` → `ProductionFileRequest.sizeBytes`, `Float`
+  en GraphQL porque un `Int` no llega a 2 GB), pero `ProductionService.uploadFile` lee el **peso real**
+  con un HEAD al CDN (`module_shared/storage/uploaded-file-size.ts`, env var `UPLOADTHING_FILE_URL`,
+  la misma base que `NEXT_PUBLIC_UPLOADTHING_URL`) y guarda ése en `ProductionFile.sizeBytes`. Sin la
+  env var o si el CDN no responde, se usa el del cliente. Antes de subir, `useProductionUpload` avisa
+  si el archivo no entra en el espacio libre (sólo cuando sube el dueño del plan: en blogs de grupo
+  decide el server).
 - **Enforcement:** `ProductionService.reserveStorage()` dentro de la MISMA transacción que
   el cupo por cantidad (`uploadFile`). Es **lectura + chequeo** (`getUserStorageUsedBytes` →
   `UserStorageUsageService.getUsedBytes`, blogs + anuncios), no un `$inc` atómico de un solo doc,
@@ -222,8 +226,9 @@ necesidades no cuentan). Es la **única dimensión por peso** del sistema; todo 
 
 **Feature flags (env vars del server) — los límites de Mis Producciones son apagables:**
 
-- `PRODUCTION_STORAGE_LIMIT_ENABLED` (default **false**): activa el límite de almacenamiento.
-  Apagado = no se valida ni se contabiliza peso.
+- `PRODUCTION_STORAGE_LIMIT_ENABLED` (default **true**): activa el límite de almacenamiento.
+  Apagado = no se valida ni se contabiliza peso. Va prendido porque es lo único que frena un
+  archivo grande (un video puede pesar 8 GB).
 - `PRODUCTION_BLOG_LIMIT_ENABLED` (default **true**): activa el tope de CANTIDAD de blogs por
   usuario. Apagado = la disponibilidad de blogs queda "infinita" (se mapea a 0 en la respuesta;
   el cliente debe mirar `blogLimitEnabled`, no el número).
@@ -331,7 +336,7 @@ Existen equivalentes para otras entidades: `boardActions.ts`, `groupActions.ts`,
 ## 8. Media / archivos (UploadThing)
 
 - **UploadThing** es el hosting/CDN de media. **No hay Firebase para media.**
-- FileRouter: `client/src/app/api/uploadthing/core.ts` — ruta `fileUploader` (image 8MB×10, video 32MB×1, pdf 8MB×3, audio 16MB×1), `uploadSingleFile` y `productionFileUploader` (archivos de un blog de Mis Producciones: lo anterior + PDF de 16MB y documentos de Office/OpenDocument). El middleware exige usuario Clerk.
+- FileRouter: `client/src/app/api/uploadthing/core.ts` — ruta `fileUploader` (image 8MB×10, video 32MB×1, pdf 8MB×3, audio 16MB×1), `uploadSingleFile` y `productionFileUploader` (archivos de un blog de Mis Producciones, de a uno: foto 64MB, **video 8GB**, audio 512MB, PDF y documentos de Office/OpenDocument 256MB). Los topes de `productionFileUploader` son sólo técnicos: lo que limita es el almacenamiento del plan + packs (§6.1). Las fotos de un blog **no se comprimen** (sólo comprime `useUploadFiles`, el de Anuncios). El middleware exige usuario Clerk.
 - Hook de subida: `client/src/utils/hooks/useUploadFiles.tsx` — **comprime imágenes** con `browser-image-compression` (videos no), sube y **guarda el `key`** (no la URL completa). Adjuntos se guardan como `{ url, label }`. A un video se le concatena el literal `"video"` al final del key.
 - Render: `FILE_URL + key`, donde `FILE_URL = process.env.NEXT_PUBLIC_UPLOADTHING_URL`. Para video: `key.replace("video","")`.
 - Los documentos de Office sólo se aceptan en `productionFileUploader`; el resto de las rutas no los admite.
@@ -371,6 +376,7 @@ Existen equivalentes para otras entidades: `boardActions.ts`, `groupActions.ts`,
   - **Estantería (`Production.shelf`):** objetos cortos debajo del encabezado (`ProductionShelf` + `ShelfEditorModal`): `category` (`ProductionShelfCategory`, ahora con `podcasts`, `music`, `images`), `title`, `subtitle` y `link`/`imageKey` opcionales. Se guarda entero con `updateProduction({ shelf })`; las imágenes van a UploadThing y el editor borra las que se quitan.
   - **Cuadrícula ordenada / libre:** preferencia de cada visitante en `localStorage` (`production-grid-style`); la ordenada pasa `uniform` a `ProductionItemCard` (recuadro cuadrado fijo).
   - **Súper botón Crear (`HelpButton`):** "Crear nuevo blog" primero. Una pantalla suma sus opciones con `useRegisterCreateActions` (`components/buttons/HelpButton/createActions.tsx`, provider en `(root)/layout.tsx`); el blog registra Carpeta / Artículo / Álbum / Subir archivos, que llaman al `ref` de `ProductionStaffToolbar`. "Álbum" = carpeta nueva + subida de las fotos elegidas.
+  - **Colecciones y Love It:** una carpeta puede ser una colección (`ProductionFolder.collectionType`: `album` | `movie` | `series` | `music`; null = carpeta común, las anteriores no tienen el campo) con `description` (sinopsis) y `coverItem` (una foto de la misma carpeta, validada en `updateFolder`). Se elige al crearla (`createFolder`, selector de tipo; "Nuevo álbum" crea `album`) o con `CollectionSettingsModal` ("Convertir en colección" / "Configurar"). `CollectionHeader` la presenta arriba de la grilla: el álbum va siempre en cuadrícula ordenada con la foto entera (`fit="contain"` de `ProductionItemCard`), la película con un reproductor grande y su afiche, la serie y el disco con lista de reproducción en orden natural por nombre que sigue sola. **Love It** (`loveItEnabled`, sólo álbumes; la entidad lo apaga si la carpeta no es álbum) lo prende el staff. `LoveItMode` (pantalla completa, fondo negro, portal) recorre las fotos de la carpeta (no las de subcarpetas): arriba/12 h `fan`, derecha/15 h `like`, abajo/18 h `maybe`, izquierda/21 h `no`, con mouse, dedo o flechas; textos y direcciones en `producciones/productionCollections.ts`. Los votos van en `productionphotovotes` (`{ production, item, user, vote }`, único por foto y usuario, se pueden cambiar; quedan en la foto aunque se mueva) y se borran con la foto o el blog. `setProductionPhotoVote` exige login y que el usuario pueda ver la foto (alcance, clave y ticket, el mismo chequeo que comentar); `getMyProductionPhotoVotes` devuelve los propios; `getProductionLoveItResults` (staff, `canViewInsights`) devuelve cada foto con sus cuentas y quién votó qué (`LoveItResultsModal`, por foto y por persona). Estado en el cliente: `useLoveIt` (voto optimista, vuelve atrás si falla).
   - **YouTube en artículos:** bloque `youtube` de Editor.js (`BlockEditor/tools/YouTubeBlockTool.ts`) que guarda `{ url, videoId, start, caption }`; `BlockRenderer` lo muestra con `MediaPlayers/YouTubeEmbed` (iframe de youtube-nocookie armado sólo desde el id validado, `utils/functions/youtube.ts`). No ocupa almacenamiento ni toca la sanitización (es genérica).
   - **Encabezado del blog:** las acciones viven en un único menú "Opciones" (`blogOptions` en `ProductionBlog`): lo de staff primero y "Denunciar" al final, sólo para quien no es parte del blog. Los fans van siempre junto al título (`FanButton`, `readOnly` para el dueño). La grilla escala con un deslizador (`ICON_SIZE`, ancho mínimo de tarjeta en px, guardado en `localStorage`); por debajo de `ICON_SIZE.compact` los controles de staff de cada tarjeta son sólo ícono.
   - **Enviar al blog desde el Tablero de trabajo:** `producciones/components/SendToBlogModal` recibe un `getFile()` (imagen generada o informe de Valuación IA renderizado a PNG), lista los blogs donde el usuario es staff (`getProductionConsumption`) y sube con `useProductionUpload` a la raíz, una carpeta existente o una nueva. Cuenta para el cupo como cualquier archivo.
@@ -384,7 +390,7 @@ Existen equivalentes para otras entidades: `boardActions.ts`, `groupActions.ts`,
   - **Notificaciones de tickets:** cada paso de una venta paga (compra, habilitación, rechazo, suspensión por comisión impaga, restablecimiento, factura de la comisión) emite `production.ticket_notification` desde `ProductionTicketService.notifyPurchase`; lo escucha `NotificationAdapter` y crea una notificación por destinatario (discriminator `NotificationProductionTicket`, `frontData.productionTicket` con `audience` = `buyer` | `staff` | `admin`). Los tickets gratuitos no avisan. Staff = dueño del blog, o `creator` + `admins[]` del grupo. Los admins de la plataforma son los usuarios con `User.isAdmin` (ver §5). Un aviso que falla nunca rompe la compra ni el cobro. En el cliente: `components/notifications/productionTickets/`.
   - **Denuncias y privacidad del denunciante:** el staff del blog ve lo que recibió con `getProductionReceivedReports` (`ProductionReceivedReportResponse`: contenido, motivo, detalle, estado y nota del admin). **Esa respuesta nunca incluye `reporter`**: sólo el admin de la plataforma lo ve (`getProductionTargetReportsAdmin`). No agregar datos del denunciante a nada que lea el staff del blog.
   - **Eventos:** `group.deleted` y `group.creator_changed` (emitidos por `GroupService`) borran o transfieren el blog del grupo.
-  - **Config:** parámetros por env vars en `module_shared/production-limits/production.limits.config.ts` (pisos gratuitos `PRODUCTION_FREE_LIBRE_BLOGS`, `PRODUCTION_FREE_AGENDA_BLOGS`, `PRODUCTION_FREE_GROUP_BLOGS`, `PRODUCTION_FREE_FILES_PER_BLOG`), incluyendo los feature flags `PRODUCTION_STORAGE_LIMIT_ENABLED` (default off), `PRODUCTION_BLOG_LIMIT_ENABLED` (default on) y `PRODUCTION_FILES_PER_BLOG_LIMIT_ENABLED` (default off) y el piso `PRODUCTION_FREE_STORAGE_BYTES` (ver §6.1).
+  - **Config:** parámetros por env vars en `module_shared/production-limits/production.limits.config.ts` (pisos gratuitos `PRODUCTION_FREE_LIBRE_BLOGS`, `PRODUCTION_FREE_AGENDA_BLOGS`, `PRODUCTION_FREE_GROUP_BLOGS`, `PRODUCTION_FREE_FILES_PER_BLOG`), incluyendo los feature flags `PRODUCTION_STORAGE_LIMIT_ENABLED` (default on), `PRODUCTION_BLOG_LIMIT_ENABLED` (default on) y `PRODUCTION_FILES_PER_BLOG_LIMIT_ENABLED` (default off) y el piso `PRODUCTION_FREE_STORAGE_BYTES` (ver §6.1).
   - **Tests:** `server/src/contexts/module_production/test/` (integración contra la base QA `automated_tests`; correr con `--runInBand`).
 - **Valuación IA y Match IA (Desarrollo 2.4.2):** `Requerimientos Modulo IA Valuacion y Match Soonpublicite.docx.md` + `contrato-API-valuacion-match-FRONT.md`, `docs-plan-BE-valuacion-match.md`, `docs-plan-UI-valuacion-match.md`.
 - Otros planes en la raíz: `plan-feature-admin-facturas.md`, `plan-feature-avatares.md`, `docs-refactor-brief-inteligente-BE.md`.

@@ -72,6 +72,9 @@ import {
   createArticleService,
   updateArticleService,
   deleteArticleService,
+  setProductionPhotoVoteService,
+  getMyProductionPhotoVotesService,
+  getProductionLoveItResultsService,
 } from "@/services/productionsServices";
 import {
   ProductionArticleRequest,
@@ -130,6 +133,9 @@ import {
   ProductionReportDetail,
   ProductionModerationInput,
   ProductionModerationResult,
+  ProductionPhotoVote,
+  ProductionPhotoVoteResult,
+  ProductionLoveItResults,
 } from "@/types/productionTypes";
 
 // ---------------------------------------------------------------------------
@@ -941,6 +947,41 @@ export const setProductionFeatured = async (
 ): Promise<ProductionResponse | ProductionActionError> => {
   try {
     return await setProductionFeaturedService(productionId, isFeatured);
+  } catch (error) {
+    return toActionError(error);
+  }
+};
+
+// ---------------------------------------------------------------------------
+// Love It: votos sobre las fotos de un álbum
+// ---------------------------------------------------------------------------
+
+export const setProductionPhotoVote = async (
+  itemId: string,
+  vote: ProductionPhotoVote | null
+): Promise<ProductionPhotoVoteResult | ProductionActionError> => {
+  try {
+    return await setProductionPhotoVoteService(itemId, vote);
+  } catch (error) {
+    return toActionError(error);
+  }
+};
+
+export const getMyProductionPhotoVotes = async (
+  folderId: string
+): Promise<ProductionPhotoVoteResult[] | ProductionActionError> => {
+  try {
+    return await getMyProductionPhotoVotesService(folderId);
+  } catch (error) {
+    return toActionError(error);
+  }
+};
+
+export const getProductionLoveItResults = async (
+  folderId: string
+): Promise<ProductionLoveItResults | ProductionActionError> => {
+  try {
+    return await getProductionLoveItResultsService(folderId);
   } catch (error) {
     return toActionError(error);
   }

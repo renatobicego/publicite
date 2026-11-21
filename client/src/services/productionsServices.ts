@@ -64,6 +64,9 @@ import {
   unlockProductionWithKeyMutation,
   createFolderMutation,
   updateFolderMutation,
+  setProductionPhotoVoteMutation,
+  getMyProductionPhotoVotesQuery,
+  getProductionLoveItResultsQuery,
   deleteFolderMutation,
   uploadFileMutation,
   updateFileMutation,
@@ -129,6 +132,9 @@ import {
   ProductionReportDetail,
   ProductionModerationInput,
   ProductionModerationResult,
+  ProductionPhotoVote,
+  ProductionPhotoVoteResult,
+  ProductionLoveItResults,
 } from "@/types/productionTypes";
 
 // ---------------------------------------------------------------------------
@@ -1133,4 +1139,50 @@ export const setProductionFeaturedService = async (
     context,
   });
   return data.setProductionFeatured;
+};
+
+// ---------------------------------------------------------------------------
+// Love It: votos sobre las fotos de un álbum
+// ---------------------------------------------------------------------------
+
+export const setProductionPhotoVoteService = async (
+  itemId: string,
+  vote: ProductionPhotoVote | null
+): Promise<ProductionPhotoVoteResult> => {
+  const tokenCache = await getAuthToken();
+  const { context } = await getApiContext(false, tokenCache);
+  const { data } = await getClient().mutate({
+    mutation: setProductionPhotoVoteMutation,
+    variables: { itemId, vote },
+    context,
+  });
+  return data.setProductionPhotoVote;
+};
+
+export const getMyProductionPhotoVotesService = async (
+  folderId: string
+): Promise<ProductionPhotoVoteResult[]> => {
+  const tokenCache = await getAuthToken();
+  const { context } = await getApiContext(false, tokenCache);
+  const { data } = await query({
+    query: getMyProductionPhotoVotesQuery,
+    variables: { folderId },
+    context,
+    fetchPolicy: "network-only",
+  });
+  return data.getMyProductionPhotoVotes;
+};
+
+export const getProductionLoveItResultsService = async (
+  folderId: string
+): Promise<ProductionLoveItResults> => {
+  const tokenCache = await getAuthToken();
+  const { context } = await getApiContext(false, tokenCache);
+  const { data } = await query({
+    query: getProductionLoveItResultsQuery,
+    variables: { folderId },
+    context,
+    fetchPolicy: "network-only",
+  });
+  return data.getProductionLoveItResults;
 };

@@ -1,4 +1,5 @@
 import {
+  ProductionCollectionType,
   ProductionFileType,
   ProductionItemKind,
   ProductionModerationStatus,
@@ -31,6 +32,13 @@ export interface ProductionItemBaseProps {
   createdBy: string;
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface ProductionFolderProps extends ProductionItemBaseProps {
+  collectionType?: ProductionCollectionType | null;
+  loveItEnabled?: boolean;
+  description?: string;
+  coverItem?: string | null;
 }
 
 export interface ProductionFileProps extends ProductionItemBaseProps {
@@ -122,7 +130,13 @@ export abstract class ProductionItem {
 
     switch (doc.kind) {
       case ProductionItemKind.folder:
-        return new ProductionFolder(base);
+        return new ProductionFolder({
+          ...base,
+          collectionType: doc.collectionType ?? null,
+          loveItEnabled: !!doc.loveItEnabled,
+          description: doc.description ?? '',
+          coverItem: doc.coverItem ? doc.coverItem.toString() : null,
+        });
       case ProductionItemKind.file:
         return new ProductionFile({
           ...base,
@@ -145,16 +159,43 @@ export abstract class ProductionItem {
 }
 
 export class ProductionFolder extends ProductionItem {
-  constructor(props: ProductionItemBaseProps) {
-    super(props);
+  private readonly folder: Omit<
+    ProductionFolderProps,
+    keyof ProductionItemBaseProps
+  >;
+
+  constructor(props: ProductionFolderProps) {
+    const { collectionType, loveItEnabled, description, coverItem, ...base } =
+      props;
+    super(base);
+    this.folder = {
+      collectionType: collectionType ?? null,
+      // Love It sólo existe en los álbumes.
+      loveItEnabled:
+        collectionType === ProductionCollectionType.album && !!loveItEnabled,
+      description: description ?? '',
+      coverItem: coverItem ?? null,
+    };
   }
 
   get getKind(): ProductionItemKind {
     return ProductionItemKind.folder;
   }
+  get getCollectionType() {
+    return this.folder.collectionType ?? null;
+  }
+  get isLoveItEnabled() {
+    return !!this.folder.loveItEnabled;
+  }
+  get getDescription() {
+    return this.folder.description ?? '';
+  }
+  get getCoverItem() {
+    return this.folder.coverItem ?? null;
+  }
 
   toPersistence() {
-    return this.basePersistence();
+    return { ...this.basePersistence(), ...this.folder };
   }
 }
 

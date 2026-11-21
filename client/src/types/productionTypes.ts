@@ -33,6 +33,25 @@ export enum ProductionFileType {
   document = "document",
 }
 
+/**
+ * Colección: carpeta dedicada a algo específico, con su propia pantalla.
+ * null = carpeta común.
+ */
+export enum ProductionCollectionType {
+  album = "album",
+  movie = "movie",
+  series = "series",
+  music = "music",
+}
+
+/** Voto de Love It: arriba fan, derecha like, abajo maybe, izquierda no. */
+export enum ProductionPhotoVote {
+  fan = "fan",
+  like = "like",
+  maybe = "maybe",
+  no = "no",
+}
+
 export enum ProductionOwnerType {
   User = "User",
   Group = "Group",
@@ -298,6 +317,12 @@ export interface ProductionItemResponse {
   blocks?: ProductionArticleBlock[] | null;
   // folder: hasta 9 elementos de adentro (sólo al listar un nivel)
   folderPreview?: ProductionFolderPreviewItem[] | null;
+  // folder: colección (álbum, película, serie, disco) y Love It
+  collectionType?: ProductionCollectionType | null;
+  loveItEnabled?: boolean | null;
+  description?: string | null;
+  /** Foto de adentro usada como afiche o tapa. */
+  coverItem?: string | null;
   // comunes
   visibility?: ProductionVisibility | null;
   effectiveVisibility: ProductionVisibility;
@@ -435,11 +460,51 @@ export interface ProductionFolderRequest {
   parentId?: string;
   name: string;
   visibility?: ProductionVisibility;
+  collectionType?: ProductionCollectionType;
+  loveItEnabled?: boolean;
 }
 
 export interface ProductionFolderUpdateRequest {
-  name?: string;
-  visibility?: ProductionVisibility;
+  name: string;
+  /** null = carpeta común; sin enviar = no cambia. */
+  collectionType?: ProductionCollectionType | null;
+  loveItEnabled?: boolean;
+  description?: string;
+  /** null = sin afiche. */
+  coverItemId?: string | null;
+}
+
+/** Mi voto de Love It sobre una foto. */
+export interface ProductionPhotoVoteResult {
+  item: string;
+  vote: ProductionPhotoVote | null;
+}
+
+export interface ProductionLoveItVote {
+  user: string;
+  userInfo?: ProductionOwnerInfo | null;
+  vote: ProductionPhotoVote;
+  updatedAt: string;
+}
+
+export interface ProductionLoveItPhoto {
+  item: string;
+  name: string;
+  fileName?: string | null;
+  key?: string | null;
+  fanCount: number;
+  likeCount: number;
+  maybeCount: number;
+  noCount: number;
+  votes: ProductionLoveItVote[];
+}
+
+/** Resultados de Love It de un álbum (staff del blog). */
+export interface ProductionLoveItResults {
+  folder: string;
+  votersCount: number;
+  votesCount: number;
+  photos: ProductionLoveItPhoto[];
 }
 
 export interface ProductionPostcardInput {
