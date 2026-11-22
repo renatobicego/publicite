@@ -28,6 +28,8 @@ const EDIT_GROUP = "/editar/grupo";
 const FILE_URL = process.env.NEXT_PUBLIC_UPLOADTHING_URL as string;
 const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
 const CUBITO = "/cubito";
+// Juego de demo servido como HTML estático desde public/.
+const CUBITO_RUN = "/cubito-run.html";
 const PRODUCTIONS = "/producciones";
 // Solapas del explorar de Producciones (como Anuncios Libres / Agenda).
 const PRODUCTIONS_LIBRE = "/producciones/libres";
@@ -82,6 +84,7 @@ export {
   NEEDS,
   POST_LIBRE,
   CUBITO,
+  CUBITO_RUN,
   PRODUCTIONS,
   PRODUCTIONS_LIBRE,
   PRODUCTIONS_CONTACTS,
