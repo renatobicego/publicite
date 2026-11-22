@@ -1,10 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { AdAgentProfile, normalizeAdAgentRegistration } from '../../application/functions/adAgent';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 
 import { UserAdapterInterface } from '../../application/adapter/userAdapter.interface';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { UserServiceInterface } from '../../domain/service/user.service.interface';
 import { UserFindAllResponse } from '../../application/adapter/dto/HTTP-RESPONSE/user.response.dto';
 import {
+  UserBusinessRequest,
   UserPersonRequest,
   UserPreferencesRequest,
   UserRequest,
@@ -56,6 +58,18 @@ export class UserAdapter implements UserAdapterInterface {
             clerkId: person.clerkId,
           })
         : null;
+
+      // Cuenta Empresa / Agente: valida web, foto, localización, descripción,
+      // CUIT e impuestos antes de crear nada.
+      const business = newUserRequest as UserBusinessRequest;
+      if (business.adAgent) {
+        if (String(newUserRequest.userType).toLowerCase() !== UserType.Business) {
+          throw new BadRequestException('Sólo una cuenta Empresa puede ser agente.');
+        }
+        const { adAgent, dni } = normalizeAdAgentRegistration(business as any);
+        business.adAgent = adAgent;
+        (business as any).dni = dni;
+      }
 
       const factory = UserFactory.getInstance(this.logger);
       const user = factory.createUser(newUserRequest.userType, newUserRequest);
@@ -191,6 +205,30 @@ export class UserAdapter implements UserAdapterInterface {
     previousCredentialPhotoUrl: string | null;
   }> {
     return await this.userService.updateCredential(userRequestId, input);
+  }
+
+  async getAdAgentProfile(userId: string): Promise<AdAgentProfile | null> {
+    return await this.userService.getAdAgentProfile(userId);
+  }
+
+  async updateAdAgent(
+    userRequestId: string,
+    input: { website?: string; taxCondition?: string; taxNote?: string },
+  ): Promise<AdAgentProfile> {
+    return await this.userService.updateAdAgent(userRequestId, input);
+  }
+
+  async getPayoutAccounts(
+    userRequestId: string,
+  ): Promise<{ label: string | null; aliasCbu: string }[]> {
+    return await this.userService.getPayoutAccounts(userRequestId);
+  }
+
+  async updatePayoutAccounts(
+    userRequestId: string,
+    accounts: { label?: string | null; aliasCbu: string }[],
+  ): Promise<{ label: string | null; aliasCbu: string }[]> {
+    return await this.userService.updatePayoutAccounts(userRequestId, accounts);
   }
 
   async updateUser(

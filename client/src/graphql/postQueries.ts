@@ -89,6 +89,32 @@ export const getPostByIdQuery = gql`
       }
       year
       endDate
+      adSpace {
+        medium
+        mediaName
+        audience
+        formats
+        mediaUrl
+        coverageArea
+        coverageName
+        placeAddress
+        band
+        frequency
+        platform
+        program
+        schedule
+        outdoorType
+        dimensions
+        illuminated
+        edition
+        periodicity
+        circulation
+        section
+        networks
+        handle
+        followers
+        engagement
+      }
     }
   }
 `;
@@ -186,6 +212,32 @@ export const getPostsByIdAndRecommendationsQuery = gql`
           socialMedia
         }
         year
+        adSpace {
+          medium
+          mediaName
+          audience
+          formats
+          mediaUrl
+          coverageArea
+          coverageName
+          placeAddress
+          band
+          frequency
+          platform
+          program
+          schedule
+          outdoorType
+          dimensions
+          illuminated
+          edition
+          periodicity
+          circulation
+          section
+          networks
+          handle
+          followers
+          engagement
+        }
       }
       recomended {
         title
@@ -221,6 +273,7 @@ export const getPostsQuery = gql`
     $limit: Float!
     $searchTerm: String
     $userLocation: UserLocation!
+    $adSpaceMedium: AdSpaceMedium
   ) {
     findAllPostByPostType(
       page: $page
@@ -228,10 +281,15 @@ export const getPostsQuery = gql`
       limit: $limit
       searchTerm: $searchTerm
       userLocation: $userLocation
+      adSpaceMedium: $adSpaceMedium
     ) {
       hasMore
       posts {
         _id
+        adSpace {
+          medium
+          mediaName
+        }
         title
         description
         frequencyPrice
@@ -267,6 +325,10 @@ export const getAllPostsQuery = gql`
     ) {
       hasMore
       posts {
+        adSpace {
+          medium
+          mediaName
+        }
         _id
         title
         description
@@ -303,6 +365,10 @@ export const getAllPostsLibreQuery = gql`
     ) {
       hasMore
       posts {
+        adSpace {
+          medium
+          mediaName
+        }
         _id
         title
         description

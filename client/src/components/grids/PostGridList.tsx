@@ -123,6 +123,7 @@ const PostGridList = ({
               }
               break;
             case "service":
+            case "adspace":
               const dataAsService = data as Service; // cast to Service
               priceToShow = `$${formatTotal(dataAsService.price)}`; // add the price
               if (

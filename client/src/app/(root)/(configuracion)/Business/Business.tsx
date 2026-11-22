@@ -6,6 +6,7 @@ import CredentialEditor from "../Profile/Credential/CredentialEditor";
 import { useEffect, useState } from "react";
 import { EditBusinessProfileProps } from "@/types/userTypes";
 import { getProfileData } from "../Profile/actions";
+import AdAgentEditor from "./AdAgentEditor";
 
 const Business = ({ username }: { username: string }) => {
   const [userData, setUserData] = useState<EditBusinessProfileProps>();
@@ -26,6 +27,8 @@ const Business = ({ username }: { username: string }) => {
       <h2 className="profile-title">Datos de Cartel - Empresa</h2>
       <Divider />
       <BusinessData data={userData} />
+      <Divider />
+      <AdAgentEditor />
       <Divider />
       <CredentialEditor
         credential={{

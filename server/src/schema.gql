@@ -176,6 +176,15 @@ type Contact {
   description: DescriptionField
 }
 
+type User_AdAgent_Graphql_Model {
+  userId: String!
+  businessName: String
+  countryRegion: String
+  website: String!
+  taxCondition: String!
+  taxNote: String!
+}
+
 type Board {
   _id: ID
   annotations: [String!]
@@ -184,6 +193,33 @@ type Board {
   color: String
   keywords: [String!]
   searchTerm: String
+}
+
+type AdSpace_Graphql {
+  medium: String
+  mediaName: String
+  audience: String
+  formats: [String!]
+  mediaUrl: String
+  coverageArea: String
+  coverageName: String
+  placeAddress: String
+  band: String
+  frequency: String
+  platform: String
+  program: String
+  schedule: String
+  outdoorType: String
+  dimensions: String
+  illuminated: Boolean
+  edition: String
+  periodicity: String
+  circulation: String
+  section: String
+  networks: [String!]
+  handle: String
+  followers: Int
+  engagement: String
 }
 
 type location {
@@ -239,6 +275,7 @@ type Post_Full_Graphql_Model {
   frequencyPrice: String
   toPrice: Float
   petitionType: String
+  adSpace: AdSpace_Graphql
 }
 
 """Condition of the good"""
@@ -385,6 +422,11 @@ type User_Credential_Graphql_Model {
   credentialPhotoUrl: String
   credentialColor: String
   previousCredentialPhotoUrl: String
+}
+
+type User_PayoutAccount_Graphql_Model {
+  label: String
+  aliasCbu: String!
 }
 
 type posts_graphql_magazine {
@@ -781,6 +823,7 @@ type Post_response_graphql_model {
   frequencyPrice: String
   toPrice: Float
   petitionType: String
+  adSpace: AdSpace_Graphql
   endDate: DateTime
 }
 
@@ -866,6 +909,7 @@ enum PostType {
   good
   service
   petition
+  adspace
 }
 
 """Type of the post """
@@ -2037,11 +2081,33 @@ type ProductionItemResponse {
   """
   folderPreview: [ProductionFolderPreviewResponse!]
 
+  """Sólo carpetas: tipo de colección; null = carpeta común"""
+  collectionType: ProductionCollectionType
+
+  """Sólo carpetas: si el álbum tiene Love It"""
+  loveItEnabled: Boolean
+
+  """Sólo carpetas: sinopsis o texto de la colección"""
+  description: String
+
+  """Sólo carpetas: foto de adentro usada como afiche o tapa"""
+  coverItem: ID
+
   """Sólo staff del blog"""
   moderationStatus: ProductionModerationStatus
   createdAt: DateTime
   updatedAt: DateTime
   access: ProductionItemAccessResponse!
+}
+
+"""
+Colección: album (fotos y videos, con Love It), movie (película), series (videos en orden) o music (audios en orden)
+"""
+enum ProductionCollectionType {
+  album
+  movie
+  series
+  music
 }
 
 """Nodo del mapa del blog: todo el árbol en una lista plana (sólo staff)"""
@@ -2566,9 +2632,66 @@ type ProductionPendingReviewResponse {
   firstAccessAt: DateTime
 }
 
+"""Voto de Love It del usuario logueado sobre una foto"""
+type ProductionPhotoVoteResponse {
+  item: ID!
+
+  """null = sin votar"""
+  vote: ProductionPhotoVote
+}
+
+"""Love It: fan (arriba), like (derecha), maybe (abajo), no (izquierda)"""
+enum ProductionPhotoVote {
+  fan
+  like
+  maybe
+  no
+}
+
+"""Quién votó qué en una foto (staff del blog)"""
+type ProductionLoveItVoteResponse {
+  user: ID!
+  userInfo: ProductionOwnerResponse
+  vote: ProductionPhotoVote!
+  updatedAt: DateTime!
+}
+
+"""Resultado de Love It de una foto"""
+type ProductionLoveItPhotoResponse {
+  item: ID!
+  name: String!
+  fileName: String
+
+  """Key de UploadThing"""
+  key: String
+  fanCount: Int!
+  likeCount: Int!
+  maybeCount: Int!
+  noCount: Int!
+  votes: [ProductionLoveItVoteResponse!]!
+}
+
+"""Resultados de Love It de un álbum (staff del blog)"""
+type ProductionLoveItResultsResponse {
+  folder: ID!
+
+  """Personas que votaron al menos una foto"""
+  votersCount: Int!
+  votesCount: Int!
+  photos: [ProductionLoveItPhotoResponse!]!
+}
+
 type Query {
   """Obtiene un usuario por su nombre de usuario """
   findUserById(_id: String!): User_Full_Grapql_Model
+
+  """
+  Perfil de una cuenta Empresa / Agente (web e impuestos). null si no es agente.
+  """
+  getAdAgentProfile(userId: String!): User_AdAgent_Graphql_Model
+
+  """Cuentas de cobro (alias o CBU/CVU) guardadas por el usuario logueado."""
+  getMyPayoutAccounts: [User_PayoutAccount_Graphql_Model!]!
 
   """Obtiene las relaciones activas del usuario"""
   getActiveRelationsOfUser: [user_active_relation!]
@@ -2632,7 +2755,16 @@ type Query {
   """
   Buscar todos los post, recibe pagina, limite y tambien el postType. De ser necesario podes enviarle un searchTerm para filtrar. (Post libres)
   """
-  findAllPostByPostType(page: Float!, limit: Float!, postType: PostType!, userLocation: UserLocation!, searchTerm: String): PostFindAllResponse
+  findAllPostByPostType(
+    page: Float!
+    limit: Float!
+    postType: PostType!
+    userLocation: UserLocation!
+    searchTerm: String
+
+    """Sólo espacios publicitarios: filtra por medio"""
+    adSpaceMedium: AdSpaceMedium
+  ): PostFindAllResponse
 
   """
   Buscar todos los post, recibe pagina, limite. De ser necesario podes enviarle un searchTerm para filtrar. (Post libres)
@@ -2860,6 +2992,12 @@ type Query {
   """Comentarios de un blog o de un archivo"""
   getProductionComments(productionId: ID!, itemId: ID, page: Int! = 1, limit: Int! = 20): ProductionCommentListResponse!
 
+  """Love It: mis votos en las fotos de un álbum"""
+  getMyProductionPhotoVotes(folderId: ID!): [ProductionPhotoVoteResponse!]!
+
+  """Love It: resultados del álbum, quién votó qué (staff del blog)"""
+  getProductionLoveItResults(folderId: ID!): ProductionLoveItResultsResponse!
+
   """
   Denuncias que recibió el blog, para su staff: qué se denunció y por qué, sin revelar al denunciante
   """
@@ -2889,6 +3027,17 @@ input AdminInvoiceFiltersInput {
 input UserLocation {
   latitude: Float!
   longitude: Float!
+}
+
+"""Medio del espacio publicitario"""
+enum AdSpaceMedium {
+  radio
+  streaming
+  tv
+  outdoor
+  newspaper
+  magazine
+  influencer
 }
 
 """Visibility_Of_Find """
@@ -2962,6 +3111,16 @@ type Mutation {
   Actualiza la foto y el color de la credencial del usuario logueado. Vacío = quitar.
   """
   updateMyCredential(credentialPhotoUrl: String, credentialColor: String): User_Credential_Graphql_Model!
+
+  """
+  Edita el sitio web y los impuestos de la cuenta Empresa / Agente logueada.
+  """
+  updateMyAdAgentProfile(website: String!, taxCondition: AdAgentTaxCondition!, taxNote: String!): User_AdAgent_Graphql_Model!
+
+  """
+  Reemplaza las cuentas de cobro del usuario logueado. La primera es la predeterminada.
+  """
+  updateMyPayoutAccounts(accounts: [User_PayoutAccount_Input!]!): [User_PayoutAccount_Graphql_Model!]!
 
   """Actualizar los metodos de contacto de un usuario"""
   updateContactById(contactId: String!, updateRequest: UpdateContactRequest!): String
@@ -3408,9 +3567,27 @@ type Mutation {
   deleteProductionComment(commentId: ID!): String!
 
   """
+  Love It: votar una foto de un álbum (fan, like, maybe, no). vote vacío = quitar el voto
+  """
+  setProductionPhotoVote(itemId: ID!, vote: ProductionPhotoVote): ProductionPhotoVoteResponse!
+
+  """
   Denunciar un blog o un contenido (DEN-01). Al superar el umbral se oculta hasta la revisión (DEN-02)
   """
   reportProductionContent(input: ProductionReportInput!): ProductionReportResponse!
+}
+
+"""Condición frente al IVA de una cuenta Empresa / Agente"""
+enum AdAgentTaxCondition {
+  responsableInscripto
+  monotributo
+  exento
+  noAlcanzado
+}
+
+input User_PayoutAccount_Input {
+  label: String
+  aliasCbu: String!
 }
 
 input UpdateContactRequest {
@@ -3534,6 +3711,7 @@ input PostRequest {
   frequencyPrice: String
   toPrice: Float
   petitionType: String
+  adSpace: AdSpaceInput
 }
 
 input VisibilityOfPost {
@@ -3577,6 +3755,57 @@ input PostMediaSizeInput {
   sizeBytes: Float!
 }
 
+input AdSpaceInput {
+  medium: AdSpaceMedium!
+
+  """Emisora, canal, diario, cuenta…"""
+  mediaName: String!
+  audience: String
+  formats: [String!]
+  mediaUrl: String
+  coverageArea: AdSpaceCoverage
+  coverageName: String
+  placeAddress: String
+  band: AdSpaceBand
+  frequency: String
+  platform: String
+  program: String
+  schedule: String
+  outdoorType: String
+  dimensions: String
+  illuminated: Boolean
+  edition: AdSpaceEdition
+  periodicity: String
+  circulation: String
+  section: String
+  networks: [String!]
+  handle: String
+  followers: Int
+  engagement: String
+}
+
+"""Alcance declarado del medio"""
+enum AdSpaceCoverage {
+  neighborhood
+  city
+  district
+  province
+  region
+  country
+  international
+}
+
+enum AdSpaceBand {
+  AM
+  FM
+}
+
+enum AdSpaceEdition {
+  print
+  digital
+  both
+}
+
 input VisibilityEnum {
   post: Visibility_of_the_post!
   socialMedia: Visibility_Of_Social_Media!
@@ -3602,6 +3831,7 @@ input PostUpdateRequest {
   toPrice: Float
   frequencyPrice: FrequencyPrice
   petitionType: String
+  adSpace: AdSpaceInput
 }
 
 input AttachedFiles {
@@ -4002,10 +4232,28 @@ input ProductionFolderRequest {
 
   """Alcance propio; vacío = hereda del padre (VIS-03/04)"""
   visibility: ProductionVisibility
+
+  """Colección (álbum, película, serie, disco); vacío = carpeta común"""
+  collectionType: ProductionCollectionType
+
+  """Love It (sólo álbumes)"""
+  loveItEnabled: Boolean
 }
 
 input ProductionFolderUpdateRequest {
   name: String!
+
+  """Colección; null = carpeta común; sin enviar = no cambia"""
+  collectionType: ProductionCollectionType
+
+  """Love It (sólo álbumes)"""
+  loveItEnabled: Boolean
+
+  """Sinopsis o texto de la colección"""
+  description: String
+
+  """Foto de la carpeta usada como afiche o tapa; null = ninguna"""
+  coverItemId: ID
 }
 
 """Archivo ya subido a UploadThing (BLG-08..12)"""
@@ -4020,7 +4268,7 @@ input ProductionFileRequest {
   key: String!
 
   """Tamaño del archivo en bytes (cupo de almacenamiento por usuario)"""
-  sizeBytes: Int
+  sizeBytes: Float
 
   """
   ID editable del archivo, único en su carpeta (BLG-13). Si se omite se genera

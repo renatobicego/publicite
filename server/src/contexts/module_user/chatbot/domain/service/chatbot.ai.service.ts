@@ -83,6 +83,7 @@ Aquí podrás encontrar algunos conceptos y términos que usaremos en el sitio p
 Publicite tiene **dos formas de mostrar los anuncios**:
 - **Anuncios geolocalizados** 🌐 (antes "libres"): se ven según la **ubicación** y el alcance geográfico que definas (ej: a la redonda de X km). Ideales para llegar a gente cercana que no conocés. Están en **Anuncios digitales en Soon › Geolocalizados**, del más cercano al más lejano.
 - **Anuncios de Agenda** 📇: se ven **solo dentro de tu red** (contactos, amigos o topamigos), según el nivel de relación que elijas. Ideales para algo más privado o dirigido a tu círculo. Están en **Anuncios digitales en Soon › Agenda de contactos** (top amigos, amigos y contactos).
+- **Espacios publicitarios** 📻: quienes tienen un espacio publicitario (radio, streaming, TV, vía pública, diario, revista o influencer) lo publican para que las marcas los contacten. Están en **Anuncios › Espacios publicitarios**, con las solapas Todos, Radio, Streaming, TV, Vía pública, Diario, Revistas e Influencers. Sólo los publica una cuenta **Empresa / Agente** (se elige al registrarse y pide sitio web oficial, foto, localización, descripción, CUIT y la explicación de impuestos: IVA RI, monotributo, etc.). Son siempre geolocalizados (usan el cupo de anuncios geolocalizados del plan) y muestran el precio como cualquier anuncio. Según el medio se carga la dirección (vía pública), el link (streaming, influencers) o el alcance del medio (barrio, ciudad, provincia, país…), aparte del radio de publicación. Soonpublicité genera el contacto, no realiza ventas: contactar descuenta del límite de contactos como en los anuncios.
 
 ### 👥 ¿A quién está dirigido?
 A **empresas y personas** que quieran ofrecer o encontrar bienes y servicios, tanto a nivel **local** (por geolocalización) como dentro de su **red de confianza**. Podés explorar como invitado o registrarte para publicar y acceder a todo.
@@ -531,6 +532,7 @@ Cuando cambias de plan (para subir o para bajar), conservas los límites de tu p
 • **Anuncios digitales en Soon** (solapa Todos): https://soonpublicite.com/anuncios
 • **Anuncios geolocalizados**: https://soonpublicite.com/anuncios/libres
 • **Agenda de contactos (anuncios)**: https://soonpublicite.com/anuncios/contactos
+• **Espacios publicitarios**: https://soonpublicite.com/anuncios/espacios-publicitarios
 • **Anuncios Recientes**: https://soonpublicite.com/anuncios/recientes
 • **Perfiles**: https://soonpublicite.com/perfiles
 • **Grupos**: https://soonpublicite.com/grupos
@@ -613,6 +615,7 @@ El dueño o moderador del blog tiene el botón **"Ver como visitante"**: muestra
 - **Clave de acceso**: el blog puede pedir una clave para ver su contenido ("Alcance y clave").
 - **Mapa de tickets** (menú "Opciones" del blog): dibuja todo el blog en recuadros —carpetas que contienen carpetas y archivos— pintados por color: verde = gratis, azul = ticket gratuito, naranja = ticket pago (con su precio). El borde punteado indica que el ticket se hereda de la carpeta o del blog. Los interruptores de arriba resaltan u ocultan cada tipo, y al tocar un recuadro se configura su ticket.
 - **Tickets**: el blog entero, una carpeta o un archivo pueden tener tres tipos de acceso: **Libre** (sin ticket, se entra directo), **Ticket gratuito** (no cuesta nada: el visitante toca "Sacar ticket gratis" y entra al instante; le sirve al dueño para saber cuánta gente entra) o **Ticket pago**. Se configura con el botón "Ticket" de cada elemento o desde el Mapa de tickets, eligiendo también cuánto dura el acceso (1 día, 1 semana, 1 mes, sin vencimiento u otro). En los tickets pagos el comprador hace **dos transferencias**: una al alias/CBU del blog y otra, la comisión, a Soonpublicité; adjunta los comprobantes y el staff del blog habilita el acceso. Tus compras están en: https://soonpublicite.com/producciones/mis-tickets
+- **Cuentas de cobro**: en Administrar cuenta (menú del avatar) › Suscripción se guardan uno o varios alias o CBU/CVU, con un nombre opcional; la primera es la predeterminada. Al configurar un ticket pago aparecen como opciones para elegir el alias/CBU del blog sin volver a escribirlo, y uno nuevo se puede guardar ahí mismo con "Guardar en mis cuentas de cobro".
 
 ### ⭐ Fans, reseñas y comentarios
 - **Fans** 💖: el contador de fans está junto al título del blog. Con "Hacerme fan" sigues el blog; el dueño ve cuántos fans tiene.

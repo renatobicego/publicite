@@ -5,6 +5,10 @@ import { PostFactoryInterface } from '../../domain/post-factory/post.factory.int
 import { PostGood } from '../../domain/entity/post-types/post.good.entity';
 import { PostService } from '../../domain/entity/post-types/post.service.entity';
 import { PostPetition } from '../../domain/entity/post-types/post.petition.entity';
+import { PostAdSpace } from '../../domain/entity/post-types/post.adspace.entity';
+import { normalizeAdSpace } from '../functions/adSpace';
+import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
+import { Visibility } from '../../domain/entity/enum/post-visibility.enum';
 import { removeAccents_removeEmojisAndToLowerCase } from '../../domain/utils/normalice.data';
 import { PostRequest } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.request';
 import { Schema } from 'mongoose';
@@ -26,6 +30,12 @@ export class PostFactory implements PostFactoryInterface {
   }
 
   createPost(postType: PostType, post: PostRequest): Post {
+    const isAdSpace = post.postType?.toLowerCase() === PostType.adspace;
+    if (isAdSpace) {
+      // Los espacios publicitarios son siempre geolocalizados y públicos.
+      post.postBehaviourType = PostBehaviourType.libre;
+      post.visibility = { ...post.visibility, post: Visibility.public };
+    }
     const visibilityNormalizated = {
       post: post.visibility.post.toLowerCase(),
       socialMedia: post.visibility.socialMedia.toLowerCase(),
@@ -97,6 +107,15 @@ export class PostFactory implements PostFactoryInterface {
           post.toPrice ?? null,
           post.frequencyPrice ?? FrequencyPrice.undefined,
           post.petitionType,
+        );
+      case PostType.adspace:
+        this.logger.log('We are creating an ad space post');
+        return new PostAdSpace(
+          postBase,
+          normalizeAdSpace(post.adSpace),
+          post.frequencyPrice ?? FrequencyPrice.undefined,
+          post.imagesUrls ?? [],
+          postReviews,
         );
       default:
         this.logger.log('Error in factory method');

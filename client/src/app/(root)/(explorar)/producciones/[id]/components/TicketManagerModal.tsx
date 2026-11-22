@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import {
   Button,
+  Checkbox,
   Input,
   Modal,
   ModalBody,
@@ -27,6 +28,16 @@ import {
 } from "@/app/server/productionActions";
 import { isProductionActionError } from "@/utils/functions/productionErrorHandler";
 import { ProductionTicket } from "@/types/productionTypes";
+import { PayoutAccount } from "@/types/userTypes";
+import {
+  getMyPayoutAccounts,
+  putMyPayoutAccounts,
+} from "@/services/userServices";
+import {
+  ALIAS_CBU_ERROR,
+  isCbu,
+  isValidAliasCbu,
+} from "@/utils/functions/aliasCbu";
 import {
   TicketAccessType,
   formatTicketHours,
@@ -119,6 +130,13 @@ const TicketManagerModal = ({
   const [duration, setDuration] = useState<DurationChoice>(24);
   const [customHours, setCustomHours] = useState("48");
   const [busy, setBusy] = useState(false);
+  // Cuentas de cobro guardadas en Administrar cuenta (sólo quien cobra).
+  const [savedAccounts, setSavedAccounts] = useState<PayoutAccount[]>([]);
+  const [saveToAccount, setSaveToAccount] = useState(false);
+  const typedAlias = aliasCbu.trim();
+  const isSavedAlias = savedAccounts.some(
+    (a) => a.aliasCbu.toLowerCase() === typedAlias.toLowerCase(),
+  );
   // Sin contenido no se puede pasar a pago (un ticket que ya es pago se puede
   // seguir editando).
   const paidBlocked = hasContent === false && !existing?.isPaid;
@@ -152,8 +170,26 @@ const TicketManagerModal = ({
   }, [isOpen, productionId, targetId]);
 
   useEffect(() => {
-    if (isOpen) setAliasCbu(currentAlias ?? "");
+    if (isOpen) {
+      setAliasCbu(currentAlias ?? "");
+      setSaveToAccount(false);
+    }
   }, [isOpen, currentAlias]);
+
+  useEffect(() => {
+    if (!isOpen || !canManagePayout) return;
+    let active = true;
+    (async () => {
+      const res = await getMyPayoutAccounts();
+      if (!active || "error" in res) return;
+      setSavedAccounts(res);
+      // Sin alias en el blog, se propone la cuenta predeterminada.
+      if (!currentAlias && res[0]) setAliasCbu(res[0].aliasCbu);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [isOpen, canManagePayout, currentAlias]);
 
   const removeTicket = async () => {
     if (!existing) return true;
@@ -196,8 +232,12 @@ const TicketManagerModal = ({
     }
     const aliasChanged =
       isPaid && canManagePayout && aliasCbu.trim() !== (currentAlias ?? "");
-    if (aliasChanged && aliasCbu.trim().length < 6) {
-      toastifyError("Ingresá un alias (6-20) o CBU/CVU (22 dígitos) válido");
+    if (aliasChanged && !isValidAliasCbu(aliasCbu)) {
+      toastifyError(ALIAS_CBU_ERROR);
+      return;
+    }
+    if (isPaid && canManagePayout && !typedAlias) {
+      toastifyError("Elegí o escribí el alias o CBU/CVU donde te transfieren");
       return;
     }
     setBusy(true);
@@ -211,6 +251,15 @@ const TicketManagerModal = ({
           toastifyError(aliasRes.error);
           return;
         }
+      }
+      if (isPaid && canManagePayout && saveToAccount && !isSavedAlias) {
+        // No frena el ticket si falla: sólo avisa.
+        const saved = await putMyPayoutAccounts([
+          ...savedAccounts,
+          { aliasCbu: typedAlias },
+        ]);
+        if ("error" in saved) toastifyError(saved.error);
+        else setSavedAccounts(saved);
       }
       const config = {
         isPaid,
@@ -383,12 +432,68 @@ const TicketManagerModal = ({
                         </div>
                       )}
                       {canManagePayout ? (
-                        <Input
-                          label="Tu alias o CBU/CVU"
-                          description="Donde te transfieren tu parte. Vale para todos los tickets del blog."
-                          value={aliasCbu}
-                          onValueChange={setAliasCbu}
-                        />
+                        <div className="flex flex-col gap-2">
+                          {savedAccounts.length > 0 && (
+                            <div
+                              role="radiogroup"
+                              aria-label="Tus cuentas de cobro"
+                              className="flex flex-col gap-1"
+                            >
+                              <p className="text-sm font-medium">
+                                Tus cuentas de cobro
+                              </p>
+                              <div className="flex flex-wrap gap-2">
+                                {savedAccounts.map((account) => {
+                                  const selected =
+                                    account.aliasCbu.toLowerCase() ===
+                                    typedAlias.toLowerCase();
+                                  return (
+                                    <Button
+                                      key={account.aliasCbu}
+                                      size="sm"
+                                      radius="full"
+                                      role="radio"
+                                      aria-checked={selected}
+                                      variant={selected ? "solid" : "bordered"}
+                                      color={selected ? "primary" : "default"}
+                                      onPress={() =>
+                                        setAliasCbu(account.aliasCbu)
+                                      }
+                                      className="h-auto max-w-full whitespace-normal break-all py-1"
+                                    >
+                                      {account.label
+                                        ? `${account.label} · `
+                                        : ""}
+                                      {isCbu(account.aliasCbu)
+                                        ? "CBU "
+                                        : ""}
+                                      {account.aliasCbu}
+                                    </Button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                          <Input
+                            label={
+                              savedAccounts.length
+                                ? "U otro alias o CBU/CVU"
+                                : "Tu alias o CBU/CVU"
+                            }
+                            description="Donde te transfieren tu parte. Vale para todos los tickets del blog. Tus cuentas se guardan en Administrar cuenta › Suscripción."
+                            value={aliasCbu}
+                            onValueChange={setAliasCbu}
+                          />
+                          {typedAlias && !isSavedAlias && (
+                            <Checkbox
+                              size="sm"
+                              isSelected={saveToAccount}
+                              onValueChange={setSaveToAccount}
+                            >
+                              Guardar en mis cuentas de cobro
+                            </Checkbox>
+                          )}
+                        </div>
                       ) : (
                         !currentAlias && (
                           <p className="text-xs text-warning-700">

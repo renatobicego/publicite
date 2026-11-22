@@ -115,6 +115,23 @@ export interface UserRepositoryInterface {
     userId: string,
     credential: { credentialPhotoUrl: string | null; credentialColor: string | null },
   ): Promise<{ credentialPhotoUrl?: string; credentialColor?: string } | null>;
+  findAdAgentProfile(userId: string): Promise<{
+    _id: string;
+    businessName?: string;
+    countryRegion?: string;
+    adAgent?: { website: string; taxCondition: string; taxNote: string };
+  } | null>;
+  updateAdAgent(
+    userId: string,
+    adAgent: { website: string; taxCondition: string; taxNote: string },
+  ): Promise<boolean>;
+  getPayoutAccounts(
+    userId: string,
+  ): Promise<{ label?: string | null; aliasCbu: string }[] | null>;
+  updatePayoutAccounts(
+    userId: string,
+    accounts: { label: string | null; aliasCbu: string }[],
+  ): Promise<boolean>;
 
   removeFriendRequest(
     previousNotificationId: string,

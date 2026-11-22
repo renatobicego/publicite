@@ -2,6 +2,7 @@ import { Button, Divider, Link } from "@nextui-org/react";
 import React, { useState } from "react";
 import AccountType from "./AccountType/AccountType";
 import PaymentMethod from "./PaymentMethod/PaymentMethod";
+import PayoutAccounts from "./PayoutAccounts/PayoutAccounts";
 import LimitPosts from "./LimitPosts/LimitPosts";
 import AiTokensLimit from "./AiTokens/AiTokensLimit";
 import { AnimatePresence, motion } from "framer-motion";
@@ -56,6 +57,8 @@ const Subscriptions = () => {
           >
             Ver Pagos Realizados
           </SecondaryButton>
+          <Divider />
+          <PayoutAccounts />
           <Divider />
           <DataBox labelText="Hacete Amigo">
             <DataItem asDiv>

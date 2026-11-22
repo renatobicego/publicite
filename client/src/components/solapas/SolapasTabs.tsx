@@ -22,7 +22,11 @@ import {
   PRODUCTIONS,
   PRODUCTIONS_LIBRE,
   PRODUCTIONS_CONTACTS,
+  POST_AD_SPACES,
 } from "@/utils/data/urls";
+import AdSpacesList from "@/app/(root)/(explorar)/anuncios/espacios-publicitarios/AdSpacesList";
+import { AD_SPACE_MEDIUMS, adSpaceMediumUrl } from "@/utils/data/adSpaces";
+import { RiAdvertisementFill } from "react-icons/ri";
 import { ProductionBehaviourType } from "@/types/productionTypes";
 import { Tab, Tabs } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
@@ -90,6 +94,9 @@ const SolapasTabs = () => {
         break;
     }
     switch (true) {
+      case pathname.startsWith(POST_AD_SPACES):
+        postTypeVisited.postType = "adspace";
+        break;
       case pathname.includes("servicios"):
         postTypeVisited.postType = "service";
         break;
@@ -184,6 +191,24 @@ const SolapasTabs = () => {
     //   title: "Próximos a Vencer",
     //   component: <PostsList postTypeVisited={postTypeVisited} />,
     // },
+  ];
+
+  // Espacios publicitarios: todos y una sub-solapa por medio.
+  const isAdSpacesActive = pathname.startsWith(POST_AD_SPACES);
+  const adSpacesSubTabs = [
+    {
+      key: POST_AD_SPACES,
+      title: <TabTitle title="Todos" icon={<RiAdvertisementFill />} />,
+      component: <AdSpacesList />,
+    },
+    ...AD_SPACE_MEDIUMS.map((medium) => {
+      const Icon = medium.icon;
+      return {
+        key: adSpaceMediumUrl(medium),
+        title: <TabTitle title={medium.label} icon={<Icon />} />,
+        component: <AdSpacesList medium={medium.key} />,
+      };
+    }),
   ];
 
   // Sub-solapas de "Producciones", como las de Anuncios: todas, libres y
@@ -320,14 +345,15 @@ const SolapasTabs = () => {
       color: ORANGE,
       isActive: !isProductionsActive && !isSocialActive,
       component: (
-        // Solapa global: deja claro dónde se publican los anuncios. Adentro,
-        // Todos / Geolocalizados / Agenda de contactos.
+        // Solapas globales: "Anuncios digitales en Soon" (Todos /
+        // Geolocalizados / Agenda de contactos) y "Espacios publicitarios"
+        // (por medio).
         <Tabs
           aria-label="Anuncios"
           variant="solid"
           color="warning"
           radius="full"
-          selectedKey="digitales"
+          selectedKey={isAdSpacesActive ? "espacios" : "digitales"}
           classNames={{
             panel: "p-0 pt-2",
             base: "max-w-full overflow-x-auto",
@@ -337,6 +363,7 @@ const SolapasTabs = () => {
         >
           <Tab
             key="digitales"
+            href={isAdSpacesActive ? POSTS : undefined}
             title={
               <span className="flex items-center gap-2">
                 <IoMdMegaphone className="size-4 md:size-5" />
@@ -345,6 +372,18 @@ const SolapasTabs = () => {
             }
           >
             {renderSubTabs(visiblePostsSubTabs, "Anuncios digitales en Soon")}
+          </Tab>
+          <Tab
+            key="espacios"
+            href={isAdSpacesActive ? undefined : POST_AD_SPACES}
+            title={
+              <span className="flex items-center gap-2">
+                <RiAdvertisementFill className="size-4 md:size-5" />
+                Espacios publicitarios
+              </span>
+            }
+          >
+            {renderSubTabs(adSpacesSubTabs, "Espacios publicitarios")}
           </Tab>
         </Tabs>
       ),

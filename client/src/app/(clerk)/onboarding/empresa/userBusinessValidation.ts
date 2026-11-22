@@ -26,3 +26,32 @@ export const userBusinessValidation = object({
       ); // Validate the CUIT/DNI format
     }),
 });
+
+/**
+ * Cuenta Empresa / Agente: además pide sitio web oficial, descripción, CUIT
+ * (no DNI) y la explicación de impuestos. Mismas reglas que
+ * `normalizeAdAgentRegistration` del server.
+ */
+export const userAdAgentValidation = userBusinessValidation.shape({
+  description: string()
+    .required("La descripción es requerida")
+    .min(20, "Escribí una descripción de al menos 20 caracteres"),
+  dni: string()
+    .required("El CUIT es requerido")
+    .test("cuit", "Ingresá un CUIT válido de 11 dígitos", (value) =>
+      /^\d{11}$/.test((value ?? "").replace(/[-\s]/g, ""))
+    ),
+  adAgent: object({
+    website: string()
+      .required("El sitio web oficial es requerido")
+      .matches(
+        /^https?:\/\/\S+$/i,
+        "El sitio web tiene que empezar con http:// o https://"
+      ),
+    taxCondition: string().required("Elegí tu condición frente al IVA"),
+    taxNote: string()
+      .required("Explicá cómo facturás y qué impuestos se suman al precio")
+      .min(10, "Explicá cómo facturás y qué impuestos se suman al precio")
+      .max(1000, "Hasta 1000 caracteres"),
+  }),
+});

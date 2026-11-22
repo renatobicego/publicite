@@ -25,6 +25,10 @@ export default async function ModifyPostBehaviour(props: {
   if ("error" in postData) {
     return <ErrorCard message={postData.error} />;
   }
+  // Los espacios publicitarios son siempre geolocalizados.
+  if (postData.postType === "adspace") {
+    redirect(`${EDIT_POST}/${params.id}`);
+  }
   const breadcrumbsItems = [
     {
       label: "Inicio",

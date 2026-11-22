@@ -1,5 +1,5 @@
 "use client";
-import { Good, Petition, Service } from "@/types/postTypes";
+import { AdSpacePost, Good, Petition, Service } from "@/types/postTypes";
 import { Accordion, AccordionItem, Spinner } from "@nextui-org/react";
 import { FaChevronLeft } from "react-icons/fa6";
 import { lazy, Suspense } from "react";
@@ -8,12 +8,13 @@ const UserData = lazy(() => import("./UserData"));
 const LocationMap = lazy(() => import("./LocationMap"));
 const Reviews = lazy(() => import("./Reviews"));
 const AttachedFiles = lazy(() => import("./AttachedFiles"));
+const AdAgentData = lazy(() => import("./AdAgentData"));
 
 const AccordionData = ({
   post,
   isPetition,
 }: {
-  post: Good | Service | Petition;
+  post: Good | Service | Petition | AdSpacePost;
   isPetition: boolean;
 }) => {
   const accordionItems = [];
@@ -52,6 +53,23 @@ const AccordionData = ({
       </Suspense>
     </AccordionItem>
   );
+
+  // Espacio publicitario: web e impuestos de la cuenta Empresa / Agente.
+  if (post.postType === "adspace") {
+    accordionItems.push(
+      <AccordionItem
+        HeadingComponent={"h6"}
+        indicator={<FaChevronLeft className="size-3" />}
+        key="adAgent"
+        aria-label="datos fiscales del anunciante"
+        title="Sitio web e impuestos del anunciante"
+      >
+        <Suspense fallback={<Spinner color="warning" />}>
+          <AdAgentData authorId={post.author._id as unknown as string} />
+        </Suspense>
+      </AccordionItem>
+    );
+  }
 
   // Add "Ubicación" if the post has location data
   if (post.geoLocation) {

@@ -1,3 +1,4 @@
+import { AdAgentProfile } from '../functions/adAgent';
 import { businessAccountUpdateRequest } from './dto/HTTP-REQUEST/user.business.request.UPDATE';
 import { personalAccountUpdateRequest } from './dto/HTTP-REQUEST/user.personal.request.UPDATE';
 import { UserPreferenceResponse } from './dto/HTTP-RESPONSE/user.preferences.response';
@@ -43,6 +44,18 @@ export interface UserAdapterInterface {
     credentialColor: string | null;
     previousCredentialPhotoUrl: string | null;
   }>;
+  getPayoutAccounts(
+    userRequestId: string,
+  ): Promise<{ label: string | null; aliasCbu: string }[]>;
+  getAdAgentProfile(userId: string): Promise<AdAgentProfile | null>;
+  updateAdAgent(
+    userRequestId: string,
+    input: { website?: string; taxCondition?: string; taxNote?: string },
+  ): Promise<AdAgentProfile>;
+  updatePayoutAccounts(
+    userRequestId: string,
+    accounts: { label?: string | null; aliasCbu: string }[],
+  ): Promise<{ label: string | null; aliasCbu: string }[]>;
   updateUserPreferencesByUsername(
     username: string,
     userPreference: UserPreferenceResponse,

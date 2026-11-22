@@ -68,6 +68,7 @@ export class UserFactory implements UserFactoryInterface {
           userBase,
           userRequest.sector,
           userRequest.businessName,
+          userRequest.adAgent ?? null,
         );
       }
       default: {

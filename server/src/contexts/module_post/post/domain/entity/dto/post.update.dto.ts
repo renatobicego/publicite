@@ -25,4 +25,5 @@ export class PostUpdateDto {
   toPrice?: number;
   petitionType?: string;
   endDate?: Date;
+  adSpace?: any;
 }

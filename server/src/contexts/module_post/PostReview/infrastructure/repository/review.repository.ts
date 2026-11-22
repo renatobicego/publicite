@@ -11,6 +11,10 @@ import {
   PostServiceModel,
   IPostService,
 } from 'src/contexts/module_post/post/infraestructure/schemas/post-types-schemas/post.service.schema';
+import {
+  PostAdSpaceModel,
+  IPostAdSpace,
+} from 'src/contexts/module_post/post/infraestructure/schemas/post-types-schemas/post.adspace.schema';
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 
 export class PostReviewRepository implements PostReviewRepositoryInterface {
@@ -24,6 +28,8 @@ export class PostReviewRepository implements PostReviewRepositoryInterface {
 
     @InjectModel(PostServiceModel.modelName)
     private readonly postServiceDocument: Model<IPostService>,
+    @InjectModel(PostAdSpaceModel.modelName)
+    private readonly postAdSpaceDocument: Model<IPostAdSpace>,
     private readonly logger: MyLoggerService,
   ) {}
 
@@ -51,7 +57,9 @@ export class PostReviewRepository implements PostReviewRepositoryInterface {
             ? this.postGoodDocument
             : postType === 'service'
               ? this.postServiceDocument
-              : null;
+              : postType === 'adspace'
+                ? this.postAdSpaceDocument
+                : null;
         if (!postModel) {
           this.logger.error(
             'Invalid post type. Please check the create review repository.',
@@ -62,7 +70,7 @@ export class PostReviewRepository implements PostReviewRepositoryInterface {
         this.logger.log(`Pushing review to ${postType} post...`);
 
         const updateResult = await (
-          postModel as Model<IPostGood | IPostService>
+          postModel as Model<IPostGood | IPostService | IPostAdSpace>
         )
           .updateOne(
             { _id: postId },

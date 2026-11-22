@@ -64,11 +64,16 @@ export const completeOnboardingBusiness = async (formData: UserBusinessFormValue
       publicMetadata: {
         onboardingComplete: true,
         userType: "Business",
+        // Cuenta Empresa / Agente: publica espacios publicitarios.
+        ...(formData.adAgent && { isAdAgent: true }),
         mongoId: resApi.data
       },
     });
     return { message: res.publicMetadata };
   } catch (err) {
+    // El server explica qué falta en el alta de un agente (web, CUIT…).
+    const serverMessage = getServerMessage(err);
+    if (serverMessage) return { error: serverMessage };
     return { error: "Error al completar el registro. Por favor intenta de nuevo." };
   }
 }

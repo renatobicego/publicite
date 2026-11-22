@@ -20,6 +20,8 @@ const POST_LIBRE = `${POSTS}/libres`;
 const POST_BEST = `${POSTS}/mejor-puntuados`;
 const POST_NEXT_TO_EXPIRE = `${POSTS}/proximos-a-vencer`;
 const POST_SEUDOBASE = `${POSTS}/seudobase`;
+// Espacios publicitarios (radio, TV, vía pública…): `/<slug del medio>` por solapa.
+const POST_AD_SPACES = `${POSTS}/espacios-publicitarios`;
 const BOARDS = "/pizarras";
 const EDIT_POST = "/editar/anuncio";
 const EDIT_PETITION = "/editar/necesidad";
@@ -83,6 +85,7 @@ export {
   SERVICES,
   NEEDS,
   POST_LIBRE,
+  POST_AD_SPACES,
   CUBITO,
   CUBITO_RUN,
   PRODUCTIONS,

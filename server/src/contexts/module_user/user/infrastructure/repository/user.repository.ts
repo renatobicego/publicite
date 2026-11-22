@@ -1005,6 +1005,7 @@ export class UserRepository implements UserRepositoryInterface {
       userType: 'Business',
       sector: user.getSector,
       businessName: user.getBusinessName,
+      ...(user.getAdAgent && { adAgent: user.getAdAgent }),
     };
     const userDocument = new this.userBusinessModel(newUser);
     const documentSaved = await userDocument.save(options);
@@ -1166,5 +1167,54 @@ export class UserRepository implements UserRepositoryInterface {
     } catch (error: any) {
       throw error;
     }
+  }
+
+  async getPayoutAccounts(
+    userId: string,
+  ): Promise<{ label?: string | null; aliasCbu: string }[] | null> {
+    const user = await this.user
+      .findById(userId)
+      .select('payoutAccounts -_id')
+      .lean();
+    if (!user) return null;
+    return (user as any).payoutAccounts ?? [];
+  }
+
+  async updatePayoutAccounts(
+    userId: string,
+    accounts: { label: string | null; aliasCbu: string }[],
+  ): Promise<boolean> {
+    const update = accounts.length
+      ? { $set: { payoutAccounts: accounts } }
+      : { $unset: { payoutAccounts: '' } };
+    const result = await this.user.updateOne({ _id: userId }, update);
+    return result.matchedCount > 0;
+  }
+
+  async findAdAgentProfile(userId: string): Promise<{
+    _id: string;
+    businessName?: string;
+    countryRegion?: string;
+    adAgent?: { website: string; taxCondition: string; taxNote: string };
+  } | null> {
+    if (!Types.ObjectId.isValid(userId)) return null;
+    const user: any = await this.user
+      .findById(userId)
+      .select('_id businessName countryRegion adAgent')
+      .lean();
+    if (!user) return null;
+    return { ...user, _id: String(user._id) };
+  }
+
+  async updateAdAgent(
+    userId: string,
+    adAgent: { website: string; taxCondition: string; taxNote: string },
+  ): Promise<boolean> {
+    // Sólo se edita una cuenta que ya es agente (no convierte cuentas).
+    const result = await this.user.updateOne(
+      { _id: userId, adAgent: { $exists: true } },
+      { $set: { adAgent } },
+    );
+    return result.matchedCount > 0;
   }
 }

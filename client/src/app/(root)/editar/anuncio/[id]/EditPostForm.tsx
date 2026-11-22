@@ -1,5 +1,8 @@
 "use client";
-import { Good, Service } from "@/types/postTypes";
+import { AdSpacePost, Good, Service } from "@/types/postTypes";
+import AdSpaceInputs from "@/app/(root)/crear/anuncio/components/CreateAdSpace/AdSpaceInputs";
+import { adSpaceEditValidation } from "@/app/(root)/crear/anuncio/components/CreateAdSpace/adSpaceValidation";
+import { adSpacePayload } from "@/utils/data/adSpaces";
 import { getPostInitialValues } from "./initialValues";
 import { Field, Form, Formik, FormikErrors, FormikHelpers } from "formik";
 import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
@@ -26,8 +29,13 @@ import ChangeBehaviourLink from "./ChangeBehaviourLink";
 import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
 import { CustomDateInput } from "@/components/inputs/CustomInputs";
 
-const EditPostForm = ({ postData }: { postData: Good | Service }) => {
+const EditPostForm = ({
+  postData,
+}: {
+  postData: Good | Service | AdSpacePost;
+}) => {
   const { postType } = postData;
+  const isAdSpace = postType === "adspace";
   const router = useRouter();
   const [newImages, setNewImages] = useState<File[]>([]);
   const { attachedFiles, setPrevAttachedFiles, prevAttachedFilesDeleted } =
@@ -45,7 +53,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
   );
   const initialValues = getPostInitialValues(
     postData,
-    postType as "good" | "service"
+    postType as "good" | "service" | "adspace"
   );
 
   const handleSubmit = async (values: any, actions: FormikHelpers<any>) => {
@@ -96,6 +104,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
       {
         ...newValuesWithUrlFiles,
         category: [values.category],
+        ...(isAdSpace && { adSpace: adSpacePayload(values.adSpace) }),
       },
       postData._id,
       postData.author.username
@@ -121,7 +130,11 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
       validateOnBlur={false}
       validateOnChange={false}
       validationSchema={
-        postType === "good" ? goodEditValidation : serviceEditValidation
+        postType === "good"
+          ? goodEditValidation
+          : isAdSpace
+            ? adSpaceEditValidation
+            : serviceEditValidation
       }
     >
       {({ isSubmitting, errors, values, setFieldValue, setValues }) => {
@@ -134,7 +147,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
                 isVideoUploaded={values.imagesUrls.some((url) =>
                   isVideo(url, true)
                 )}
-                type={postType as any}
+                type={(isAdSpace ? "service" : postType) as any}
                 prevFilesCount={values.imagesUrls.length}
                 customClassname="md:w-full"
               />
@@ -162,14 +175,18 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
               id="edit-post-form"
               className="flex flex-col gap-4 flex-1 max-md:w-full"
             >
-              <ChangeBehaviourLink
-                id={postData._id}
-                postBehaviourType={postData.postBehaviourType}
-              />
+              {/* Los espacios publicitarios son siempre geolocalizados. */}
+              {!isAdSpace && (
+                <ChangeBehaviourLink
+                  id={postData._id}
+                  postBehaviourType={postData.postBehaviourType}
+                />
+              )}
+              {isAdSpace && <AdSpaceInputs />}
               <TitleDescription errors={errors} setFieldValue={setFieldValue} />
               <PriceCategory
                 errors={errors}
-                isService={postType === "service"}
+                isService={postType === "service" || isAdSpace}
               />
               {postType === "good" && <Condition errors={errors} />}
               <Field
@@ -190,7 +207,7 @@ const EditPostForm = ({ postData }: { postData: Good | Service }) => {
               <AccordionInputs
                 errors={errors}
                 isEditing
-                isService={postType === "service"}
+                isService={postType === "service" || isAdSpace}
                 postBehaviourType={postData.postBehaviourType}
               />
               <RequiredFieldsMsg />

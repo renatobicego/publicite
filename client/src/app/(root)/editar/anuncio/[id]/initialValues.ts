@@ -1,9 +1,15 @@
-import { CreatePostValues, Good, Petition, Service } from "@/types/postTypes";
+import {
+  AdSpacePost,
+  CreatePostValues,
+  Good,
+  Service,
+} from "@/types/postTypes";
+import { emptyAdSpace } from "@/utils/data/adSpaces";
 import { parseIsoDate } from "@/utils/functions/dates";
 
 export const getPostInitialValues = (
-  postData: Good | Service,
-  postType: "good" | "service"
+  postData: Good | Service | AdSpacePost,
+  postType: "good" | "service" | "adspace"
 ) => {
   const postValues: Omit<
     CreatePostValues,
@@ -40,5 +46,22 @@ export const getPostInitialValues = (
         frequencyPrice: serviceData.frequencyPrice,
       };
       return serviceValues;
+    case "adspace": {
+      const adSpaceData = postData as AdSpacePost;
+      // Los campos que vienen en null se completan vacíos para el formulario.
+      const base = emptyAdSpace(adSpaceData.adSpace.medium);
+      const adSpace = Object.fromEntries(
+        Object.entries(base).map(([key, value]) => [
+          key,
+          (adSpaceData.adSpace as any)[key] ?? value,
+        ])
+      ) as typeof base;
+      return {
+        ...postValues,
+        imagesUrls: adSpaceData.imagesUrls,
+        frequencyPrice: adSpaceData.frequencyPrice,
+        adSpace,
+      };
+    }
   }
 };

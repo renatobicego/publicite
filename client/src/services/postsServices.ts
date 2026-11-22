@@ -1,4 +1,5 @@
 "use server";
+import type { AdSpaceMedium } from "@/types/postTypes";
 import {
   Good,
   GoodPostValues,
@@ -152,7 +153,8 @@ export const getPosts = async (
   page: number,
   postType: PostType,
   coordinates: Coordinates | null,
-  limit: number | undefined = 20
+  limit: number | undefined = 20,
+  adSpaceMedium?: AdSpaceMedium
 ) => {
   try {
     if (!coordinates) {
@@ -170,6 +172,7 @@ export const getPosts = async (
         page,
         searchTerm: searchTerm ? searchTerm : "",
         userLocation: coordinates,
+        adSpaceMedium: postType === "adspace" ? adSpaceMedium ?? null : null,
       },
       context,
     });

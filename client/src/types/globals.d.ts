@@ -26,7 +26,7 @@ declare global {
   type UserRelation = "contacts" | "friends" | "topfriends";
 
   type FrequencyPrice = "hour" | "day" | "week" | "month" | "year";
-  type PostType = "service" | "good" | "petition";
+  type PostType = "service" | "good" | "petition" | "adspace";
 
   interface BaseNotification {
     _id: string;

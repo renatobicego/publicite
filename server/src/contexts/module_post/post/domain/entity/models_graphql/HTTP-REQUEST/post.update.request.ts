@@ -3,6 +3,7 @@ import { ObjectId } from 'mongoose';
 import { FrequencyPrice } from 'src/contexts/module_post/post/domain/entity/enum/post-service-freq-type.enum';
 import { PostType } from 'src/contexts/module_post/post/domain/entity/enum/post-type.enum';
 import { PostMediaSizeInput } from './post.media-size.request';
+import { AdSpaceInput } from '../adspace.graphql';
 import {
   Visibility,
   Visibility_Of_Social_Media,
@@ -85,6 +86,10 @@ export class PostUpdateRequest {
 
   @Field(() => String, { nullable: true })
   petitionType?: string;
+
+  //POST AdSpace (espacio publicitario): se manda entero
+  @Field(() => AdSpaceInput, { nullable: true })
+  adSpace?: AdSpaceInput;
 
 
 }

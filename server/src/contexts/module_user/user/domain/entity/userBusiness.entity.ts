@@ -1,3 +1,4 @@
+import { AdAgentData } from '../../application/functions/adAgent';
 import { ObjectId } from 'mongoose';
 import { User } from './user.entity';
 import { UserType } from './enum/user.enums';
@@ -12,8 +13,14 @@ export interface UB_update {
 export class UserBusiness extends User {
   private businessName: string;
   private sector: ObjectId;
+  private adAgent: AdAgentData | null;
 
-  constructor(user: User, sector: ObjectId, businessName: string) {
+  constructor(
+    user: User,
+    sector: ObjectId,
+    businessName: string,
+    adAgent?: AdAgentData | null,
+  ) {
     super(
       user.getClerkId,
       user.getEmail,
@@ -48,6 +55,11 @@ export class UserBusiness extends User {
     );
     this.sector = sector;
     this.businessName = businessName;
+    this.adAgent = adAgent ?? null;
+  }
+
+  get getAdAgent(): AdAgentData | null {
+    return this.adAgent;
   }
 
   get getSector(): ObjectId {

@@ -35,6 +35,7 @@ export interface PostServiceInterface {
     userLocation: UserLocation,
     searchTerm?: string,
     userRequestId?: string,
+    adSpaceMedium?: string,
   ): Promise<void>;
   findAllPosts(
     page: number,

@@ -4,6 +4,7 @@ import {
   CredentialSettings,
   EditPersonProfileProps,
   GetUser,
+  PayoutAccount,
   UserPersonFormValues,
   UserPreferences,
   UserRelationNotification,
@@ -23,12 +24,17 @@ import getUserByIdQuery, {
   putActiveRelationsMutation,
   updateContactMutation,
   updateMyCredentialMutation,
+  getMyPayoutAccountsQuery,
+  getAdAgentProfileQuery,
+  updateMyAdAgentProfileMutation,
+  updateMyPayoutAccountsMutation,
 } from "@/graphql/userQueries";
 import { ApolloError } from "@apollo/client";
 import { getApiContext } from "./apiContext";
 import { handleApolloError } from "@/utils/functions/errorHandler";
 import { GetContactSellersPetitionDTO } from "@/types/postTypes";
 import { getAuthToken } from "./auth-token";
+import type { AdAgentProfile } from "@/utils/data/adSpaces";
 
 const baseUrl = `${process.env.API_URL}/user/personal`;
 
@@ -117,6 +123,82 @@ export const putMyCredential = async (
       },
     });
     return data.updateMyCredential;
+  } catch (error) {
+    return handleApolloError(error);
+  }
+};
+
+/** Perfil de una cuenta Empresa / Agente, o null si no lo es. */
+export const getAdAgentProfile = async (
+  userId: string
+): Promise<AdAgentProfile | null | { error: string }> => {
+  try {
+    const { context } = await getApiContext(true);
+    const { data } = await query({
+      query: getAdAgentProfileQuery,
+      variables: { userId },
+      context,
+      fetchPolicy: "no-cache",
+    });
+    return data.getAdAgentProfile ?? null;
+  } catch (error) {
+    return handleApolloError(error);
+  }
+};
+
+/** Edita el sitio web y los impuestos de la cuenta Empresa / Agente logueada. */
+export const putMyAdAgentProfile = async (input: {
+  website: string;
+  taxCondition: string;
+  taxNote: string;
+}): Promise<AdAgentProfile | { error: string }> => {
+  try {
+    const { context } = await getApiContext();
+    const { data } = await getClient().mutate({
+      mutation: updateMyAdAgentProfileMutation,
+      variables: input,
+      context,
+    });
+    return data.updateMyAdAgentProfile;
+  } catch (error) {
+    return handleApolloError(error);
+  }
+};
+
+/** Cuentas de cobro (alias o CBU/CVU) guardadas por el usuario logueado. */
+export const getMyPayoutAccounts = async (): Promise<
+  PayoutAccount[] | { error: string }
+> => {
+  try {
+    const { context } = await getApiContext();
+    const { data } = await query({
+      query: getMyPayoutAccountsQuery,
+      context,
+      fetchPolicy: "no-cache",
+    });
+    return data.getMyPayoutAccounts;
+  } catch (error) {
+    return handleApolloError(error);
+  }
+};
+
+/** Reemplaza las cuentas de cobro del usuario logueado. */
+export const putMyPayoutAccounts = async (
+  accounts: PayoutAccount[]
+): Promise<PayoutAccount[] | { error: string }> => {
+  try {
+    const { context } = await getApiContext();
+    const { data } = await getClient().mutate({
+      mutation: updateMyPayoutAccountsMutation,
+      variables: {
+        accounts: accounts.map((a) => ({
+          label: a.label?.trim() || null,
+          aliasCbu: a.aliasCbu.trim(),
+        })),
+      },
+      context,
+    });
+    return data.updateMyPayoutAccounts;
   } catch (error) {
     return handleApolloError(error);
   }

@@ -7,6 +7,7 @@ import {
 } from '../../enum/post-visibility.enum';
 import { PostBehaviourType } from '../../enum/postBehaviourType.enum';
 import { PostMediaSizeInput } from './post.media-size.request';
+import { AdSpaceInput } from '../adspace.graphql';
 
 @InputType()
 class VisibilityOfPost {
@@ -119,6 +120,10 @@ export class PostRequest {
 
   @Field(() => String, { nullable: true })
   petitionType: string;
+
+  // attributes of adspace (espacio publicitario)
+  @Field(() => AdSpaceInput, { nullable: true })
+  adSpace?: AdSpaceInput;
 }
 
 @ObjectType()

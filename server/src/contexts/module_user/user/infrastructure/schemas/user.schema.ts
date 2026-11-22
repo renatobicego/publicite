@@ -29,6 +29,8 @@ interface IUser extends Document {
   credentialId: string | undefined;
   credentialPhotoUrl: string | undefined;
   credentialColor: string | undefined;
+  payoutAccounts?: { label?: string | null; aliasCbu: string }[];
+  adAgent?: { website: string; taxCondition: string; taxNote: string };
   identityVerification?: {
     provider: string;
     method: string;
@@ -78,6 +80,30 @@ const UserSchema = new Schema<IUser>(
     // foto de perfil de Clerk) y color decorativo del borde (hex). Opcionales.
     credentialPhotoUrl: { type: String },
     credentialColor: { type: String },
+    // Cuenta Empresa / Agente (la única que publica espacios publicitarios).
+    // Sólo en cuentas Empresa creadas como agente; sin el campo = no es agente.
+    adAgent: {
+      type: {
+        website: { type: String, required: true },
+        taxCondition: { type: String, required: true },
+        taxNote: { type: String, required: true },
+      },
+      default: undefined,
+      _id: false,
+    },
+    // Cuentas de cobro guardadas (alias o CBU/CVU) que se ofrecen como
+    // opciones al configurar el alias de cobro de un ticket. La primera es la
+    // que se propone por defecto.
+    payoutAccounts: {
+      type: [
+        {
+          label: { type: String, default: null },
+          aliasCbu: { type: String, required: true },
+        },
+      ],
+      default: undefined,
+      _id: false,
+    },
     // Verificación del DNI con RENAPER al registrarse (sólo personas). Sin el
     // campo = cuenta anterior a la verificación.
     identityVerification: {

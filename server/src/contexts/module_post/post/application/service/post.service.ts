@@ -23,9 +23,13 @@ import {
 import { PostsMemberGroupResponse } from 'src/contexts/module_shared/sharedGraphql/group.posts.member.response';
 import { PostLimitResponseGraphql } from '../../domain/entity/models_graphql/HTTP-RESPONSE/post.limit.response.graphql';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
-import { Visibility_Of_Find } from '../../domain/entity/enum/post-visibility.enum';
+import {
+  Visibility,
+  Visibility_Of_Find,
+} from '../../domain/entity/enum/post-visibility.enum';
 import { VisibilityEnum } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.update.request';
 import { PostComment } from '../../domain/entity/postComment.entity';
+import { normalizeAdSpace } from '../functions/adSpace';
 import {
   mergePostMediaSizes,
   sumMediaSizes,
@@ -74,6 +78,14 @@ export class PostService implements PostServiceInterface {
     );
   }
 
+  private async assertAdAgent(userId: string): Promise<void> {
+    if (!(await this.userService.isAdAgent(userId))) {
+      throw new BadRequestException(
+        'Sólo las cuentas Empresa / Agente pueden publicar espacios publicitarios.',
+      );
+    }
+  }
+
   async activateOrDeactivatePost(
     _id: string,
     activate: boolean,
@@ -109,6 +121,10 @@ export class PostService implements PostServiceInterface {
   async create(post: PostRequest): Promise<any> {
     const postType = post.postType?.toLowerCase();
     if (!postType) throw new BadRequestException('Post type is required');
+    // Espacios publicitarios: sólo las cuentas Empresa / Agente.
+    if (postType === PostType.adspace) {
+      await this.assertAdAgent(post.author);
+    }
     const postFactory = PostFactory.getInstance(this.logger);
     const postMapped = postFactory.createPost(postType as PostType, post);
 
@@ -279,6 +295,7 @@ export class PostService implements PostServiceInterface {
     userLocation: UserLocation,
     searchTerm?: string,
     userRequestId?: string,
+    adSpaceMedium?: string,
   ): Promise<any> {
     try {
       return await this.postRepository.findAllPostByPostType(
@@ -288,6 +305,7 @@ export class PostService implements PostServiceInterface {
         userLocation,
         searchTerm,
         userRequestId,
+        postType === PostType.adspace ? adSpaceMedium : undefined,
       );
     } catch (error: any) {
       throw error;
@@ -564,6 +582,21 @@ export class PostService implements PostServiceInterface {
     postType: string,
   ): Promise<any> {
     const { mediaSizes: incoming, ...fields } = postUpdate;
+    if (postType === PostType.adspace) {
+      const storedType = await this.postRepository.findPostTypeById(id);
+      if (storedType !== PostType.adspace) {
+        throw new BadRequestException('El anuncio no es un espacio publicitario');
+      }
+      if (fields.adSpace !== undefined) {
+        fields.adSpace = normalizeAdSpace(fields.adSpace);
+      }
+      // Siempre público (geolocalizado).
+      if (fields.visibility) {
+        fields.visibility = { ...fields.visibility, post: Visibility.public };
+      }
+    } else {
+      delete fields.adSpace;
+    }
     // Sin cambios en las fotos, el peso guardado queda igual.
     if (fields.imagesUrls === undefined) {
       return await this.postRepository.updatePostById(fields, id, postType);
@@ -614,6 +647,14 @@ export class PostService implements PostServiceInterface {
   ): Promise<any> {
     try {
       this.logger.log('Updating behaviour_type from post with id: ' + _id);
+      if (
+        postBehaviourType === PostBehaviourType.agenda &&
+        (await this.postRepository.findPostTypeById(_id)) === PostType.adspace
+      ) {
+        throw new BadRequestException(
+          'Los espacios publicitarios son siempre geolocalizados: no pueden pasar a la agenda.',
+        );
+      }
       const isAllawedToChange = await this.userService.isThisUserAllowedToPost(
         userRequestId,
         postBehaviourType,

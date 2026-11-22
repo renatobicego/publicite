@@ -4,6 +4,9 @@ export enum PostType {
   good = 'good',
   service = 'service',
   petition = 'petition',
+  // Espacio publicitario (radio, TV, vía pública…). Sólo cuentas Empresa /
+  // Agente y siempre geolocalizado (libre).
+  adspace = 'adspace',
 }
 
 registerEnumType(PostType, {

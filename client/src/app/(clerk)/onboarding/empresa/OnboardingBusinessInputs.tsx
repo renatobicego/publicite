@@ -21,20 +21,25 @@ interface OnboardingBusinessInputsProps {
     shouldValidate?: boolean
   ) => Promise<void | FormikErrors<UserBusinessFormValues>>;
   businessSectors: BusinessSector[];
+  isAdAgent?: boolean;
 }
 
 const OnboardingBusinessInputs = ({
   errors,
   setFieldValue,
   businessSectors,
+  isAdAgent = false,
 }: OnboardingBusinessInputsProps) => {
+  const agentErrors = errors.adAgent as
+    | Partial<Record<"website", string>>
+    | undefined;
   return (
     <>
       <div className="flex gap-4 w-full max-2xl:flex-col">
         <Field
           as={CustomInput}
           name="businessName"
-          label="Nombre de la Empresa"
+          label={isAdAgent ? "Nombre de la empresa o agente" : "Nombre de la Empresa"}
           aria-label="nombre"
           isInvalid={!!errors.businessName}
           errorMessage={errors.businessName}
@@ -55,7 +60,7 @@ const OnboardingBusinessInputs = ({
       <Field
         as={CustomInput}
         name="dni"
-        label="CUIT/DNI"
+        label={isAdAgent ? "CUIT" : "CUIT/DNI"}
         aria-label="dni o cuit"
         isRequired
         //only accept numbers and dashes
@@ -137,12 +142,17 @@ const OnboardingBusinessInputs = ({
         />
         <Field
           as={CustomInput}
-          name="contact.website"
+          name={isAdAgent ? "adAgent.website" : "contact.website"}
           startContent={<FaLink className=" text-text-color" />}
-          label="Website"
+          label={isAdAgent ? "Sitio web oficial" : "Website"}
           aria-label="website"
-          isInvalid={!!errors.contact?.website}
-          errorMessage={errors.contact?.website}
+          isRequired={isAdAgent}
+          isInvalid={
+            isAdAgent ? !!agentErrors?.website : !!errors.contact?.website
+          }
+          errorMessage={
+            isAdAgent ? agentErrors?.website : errors.contact?.website
+          }
           placeholder="Link a página web"
         />
       </div>
@@ -151,7 +161,14 @@ const OnboardingBusinessInputs = ({
         name="description"
         label="Descripción"
         aria-label="descripcion"
-        placeholder="Ingrese una descripción para su empresa"
+        placeholder={
+          isAdAgent
+            ? "Contá qué espacios ofrecés, a quién llegan y desde cuándo"
+            : "Ingrese una descripción para su empresa"
+        }
+        isRequired={isAdAgent}
+        isInvalid={!!errors.description}
+        errorMessage={errors.description}
       />
     </>
   );

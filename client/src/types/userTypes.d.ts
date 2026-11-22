@@ -32,6 +32,15 @@ export interface User {
   credentialColor?: string | null;
 }
 
+/**
+ * Cuenta de cobro guardada en Administrar cuenta: alias (6-20) o CBU/CVU
+ * (22 dígitos). Se ofrece como opción al configurar el cobro de un ticket.
+ */
+export interface PayoutAccount {
+  label?: string | null;
+  aliasCbu: string;
+}
+
 /** Foto y color de la credencial, tal como los edita el usuario. */
 export interface CredentialSettings {
   credentialPhotoUrl?: string | null;
@@ -145,6 +154,12 @@ export interface UserBusinessFormValues
     website?: string;
   };
   sector: ObjectId;
+  /** Sólo en el alta de una cuenta Empresa / Agente. */
+  adAgent?: {
+    website: string;
+    taxCondition: string;
+    taxNote: string;
+  };
   name: string;
   lastName: string;
 }

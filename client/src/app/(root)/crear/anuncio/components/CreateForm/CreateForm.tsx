@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import SelectType from "../SelectType";
+import SelectType, { CreatePostKind } from "../SelectType";
+import { useAdAgentProfile } from "@/utils/hooks/useAdAgentProfile";
 import UploadImages from "../Upload/UploadImages";
 import { Divider } from "@nextui-org/react";
 import CreateGood from "../CreateGood/CreateGood";
@@ -12,12 +13,19 @@ import SelectPostBehaviourType from "../SelectPostBehaviourType";
 import PostsLimitReached from "../PostsLimitReached";
 
 const CreateForm = ({ userId, prefill }: { userId?: string; prefill?: { title?: string; description?: string; price?: number; fromValuacion?: string; imageUrls?: string[]; type?: "good" | "service" } }) => {
-  const [type, setType] = useState<"good" | "service" | undefined>(prefill?.type || (prefill ? "good" : undefined));
+  const [type, setType] = useState<CreatePostKind | undefined>(prefill?.type || (prefill ? "good" : undefined));
   const [files, setFiles] = useState<File[]>([]);
   const [postBehaviourType, setPostBehaviourType] =
     useState<PostBehaviourType | undefined>(prefill ? "libre" : undefined);
   const { userCanPublishPost, limit, numberOfPosts, loading } =
     useUserPostLimit(postBehaviourType);
+  // Cuenta Empresa / Agente: puede publicar espacios publicitarios, que son
+  // siempre geolocalizados (usan el cupo de anuncios geolocalizados).
+  const { isAdAgent } = useAdAgentProfile(userId);
+  const selectType = (next: CreatePostKind) => {
+    setType(next);
+    if (next === "adspace") setPostBehaviourType("libre");
+  };
 
   const prefillImageUrls = prefill?.imageUrls || [];
   return (
@@ -28,7 +36,7 @@ const CreateForm = ({ userId, prefill }: { userId?: string; prefill?: { title?: 
       <UploadImages
         files={files}
         setFiles={setFiles}
-        type={type}
+        type={type === "adspace" ? "service" : type}
         customClassname="max-md:hidden"
         prefillImageUrls={prefillImageUrls}
       />
@@ -40,6 +48,11 @@ const CreateForm = ({ userId, prefill }: { userId?: string; prefill?: { title?: 
           <SelectPostBehaviourType
             type={postBehaviourType}
             setType={setPostBehaviourType}
+            agendaDisabledReason={
+              type === "adspace"
+                ? "Los espacios publicitarios son siempre geolocalizados."
+                : undefined
+            }
           />
           <Divider />
 
@@ -50,18 +63,24 @@ const CreateForm = ({ userId, prefill }: { userId?: string; prefill?: { title?: 
           )}
           {postBehaviourType && userCanPublishPost && (
             <>
-              <SelectType type={type} setType={setType} />
+              <SelectType
+                type={type}
+                setType={selectType}
+                canPublishAdSpace={isAdAgent}
+              />
               <Divider />
               {!type && (
                 <p className="text-red-500 text-center max-lg:text-sm">
-                  Por favor, seleccione si es un bien o un servicio.
+                  {isAdAgent
+                    ? "Por favor, seleccione si es un bien, un servicio o un espacio publicitario."
+                    : "Por favor, seleccione si es un bien o un servicio."}
                 </p>
               )}
               {type && (
                 <UploadImages
                   files={files}
                   setFiles={setFiles}
-                  type={type}
+                  type={type === "adspace" ? "service" : type}
                   customClassname="md:hidden"
                   prefillImageUrls={prefillImageUrls}
                 />
@@ -76,12 +95,14 @@ const CreateForm = ({ userId, prefill }: { userId?: string; prefill?: { title?: 
                   prefillImageUrls={prefillImageUrls}
                 />
               ) : (
-                type === "service" && (
+                (type === "service" || type === "adspace") && (
                   <CreateService
+                    key={type}
                     files={files}
                     userCanPublishPost={userCanPublishPost}
                     userId={userId}
                     postBehaviourType={postBehaviourType}
+                    isAdSpace={type === "adspace"}
                   />
                 )
               )}

@@ -9,6 +9,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MyLoggerService } from "src/contexts/module_shared/logger/logger.service";
 import { PostGoodModel } from "../post/infraestructure/schemas/post-types-schemas/post.good.schema";
 import { PostPetitionModel } from "../post/infraestructure/schemas/post-types-schemas/post.petition.schema";
+import { PostAdSpaceModel } from "../post/infraestructure/schemas/post-types-schemas/post.adspace.schema";
 import { PostServiceModel } from "../post/infraestructure/schemas/post-types-schemas/post.service.schema";
 import PostModel from "../post/infraestructure/schemas/post.schema";
 import { PostService } from "../post/application/service/post.service";
@@ -57,6 +58,7 @@ const post_testing_module = async (): Promise<TestingModule> => {
                     discriminators: [
                         { name: PostGoodModel.modelName, schema: PostGoodModel.schema },
                         { name: PostServiceModel.modelName, schema: PostServiceModel.schema },
+                        { name: PostAdSpaceModel.modelName, schema: PostAdSpaceModel.schema },
                         {
                             name: PostPetitionModel.modelName,
                             schema: PostPetitionModel.schema,

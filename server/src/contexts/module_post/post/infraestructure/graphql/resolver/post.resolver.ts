@@ -12,6 +12,7 @@ import { Post_response_graphql_model } from 'src/contexts/module_post/post/domai
 import { PostFindAllResponse } from 'src/contexts/module_post/post/domain/entity/models_graphql/HTTP-RESPONSE/findAll-response/post.findAll.response';
 import { Post_Full_Graphql_Model } from 'src/contexts/module_post/post/domain/entity/models_graphql/post.full.grapql.model';
 import { PostType } from 'src/contexts/module_post/post/domain/entity/enum/post-type.enum';
+import { AdSpaceMedium } from 'src/contexts/module_post/post/domain/entity/enum/post-adspace.enums';
 import { PubliciteAuth } from 'src/contexts/module_shared/auth/publicite_auth/publicite_auth';
 import { CustomContextRequestInterface } from 'src/contexts/module_shared/auth/custom_request/custom.context.request.interface';
 import {
@@ -322,6 +323,12 @@ export class PostResolver {
     @Args('searchTerm', { type: () => String, nullable: true })
     searchTerm: string,
     @Context() context: { req: CustomContextRequestInterface },
+    @Args('adSpaceMedium', {
+      type: () => AdSpaceMedium,
+      nullable: true,
+      description: 'Sólo espacios publicitarios: filtra por medio',
+    })
+    adSpaceMedium?: AdSpaceMedium,
   ): Promise<any> {
     try {
       const userRequestId = context.req.userRequestId ?? undefined;
@@ -332,6 +339,7 @@ export class PostResolver {
         userLocation,
         searchTerm,
         userRequestId,
+        adSpaceMedium,
       );
     } catch (error: any) {
       throw error;

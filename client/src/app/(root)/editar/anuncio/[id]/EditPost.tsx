@@ -1,9 +1,9 @@
 "use client";
 import { AttachedFilesProvider } from "@/app/(root)/crear/anuncio/components/CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
 import EditPostForm from "./EditPostForm";
-import { Good, Service } from "@/types/postTypes";
+import { AdSpacePost, Good, Service } from "@/types/postTypes";
 
-const EditPost = ({ postData }: { postData: Good | Service }) => {
+const EditPost = ({ postData }: { postData: Good | Service | AdSpacePost }) => {
   return (
     <AttachedFilesProvider>
       <EditPostForm postData={postData} />

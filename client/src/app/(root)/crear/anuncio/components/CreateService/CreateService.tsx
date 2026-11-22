@@ -21,19 +21,26 @@ import RequiredFieldsMsg from "@/components/chips/RequiredFieldsMsg";
 import { useAttachedFiles } from "../CreateForm/inputs/AccordionInputs/AttachedFIles/AttachedFilesContext";
 import { deleteFilesService } from "@/app/server/uploadThing";
 import { CustomDateInput } from "@/components/inputs/CustomInputs";
+import AdSpaceInputs from "../CreateAdSpace/AdSpaceInputs";
+import { adSpaceValidation } from "../CreateAdSpace/adSpaceValidation";
+import { adSpacePayload, emptyAdSpace } from "@/utils/data/adSpaces";
+import { AdSpacePostValues } from "@/types/postTypes";
 
 const CreateService = ({
   files,
   userCanPublishPost,
   userId,
   postBehaviourType,
+  isAdSpace = false,
 }: {
   files: File[];
   userCanPublishPost: boolean;
   userId?: string;
   postBehaviourType: PostBehaviourType;
+  /** Espacio publicitario (sólo Empresa / Agente): siempre geolocalizado. */
+  isAdSpace?: boolean;
 }) => {
-  const initialValues: ServicePostValues = {
+  const initialValues: ServicePostValues | AdSpacePostValues = {
     attachedFiles: [],
     description: "",
     title: "",
@@ -49,11 +56,14 @@ const CreateService = ({
       userSetted: false,
       ratio: 5,
     },
-    postType: "service",
+    postType: isAdSpace ? "adspace" : "service",
     visibility: {
-      post: postBehaviourType === "agenda" ? "contacts" : "public",
+      post: postBehaviourType === "agenda" && !isAdSpace ? "contacts" : "public",
       socialMedia: "public",
     },
+    ...(isAdSpace && {
+      adSpace: { ...emptyAdSpace("radio"), medium: undefined as any },
+    }),
     createAt: today(getLocalTimeZone()).toString(),
     postBehaviourType,
     endDate: today(getLocalTimeZone()).add({ days: 14 }).toString(),
@@ -116,6 +126,9 @@ const CreateService = ({
         geoLocation: dbLocation,
         attachedFiles,
         category: [values.category],
+        ...(isAdSpace && {
+          adSpace: adSpacePayload((values as unknown as AdSpacePostValues).adSpace),
+        }),
       },
       userCanPublishPost
     );
@@ -138,11 +151,22 @@ const CreateService = ({
       initialValues={initialValues}
       onSubmit={handleSubmit}
       enableReinitialize
-      validationSchema={serviceValidation}
+      validationSchema={isAdSpace ? adSpaceValidation : serviceValidation}
     >
       {({ isSubmitting, errors, setFieldValue, values }) => {
         return (
           <Form className="flex flex-col gap-4">
+            {isAdSpace && (
+              <>
+                <p className="text-sm rounded-lg bg-warning-50 px-3 py-2">
+                  Publicás tu espacio para que las marcas te contacten.
+                  Soonpublicité genera el contacto, no realiza ventas: el precio
+                  es de referencia y la contratación la arreglás vos.
+                </p>
+                <AdSpaceInputs />
+                <Divider />
+              </>
+            )}
             <TitleDescription errors={errors} setFieldValue={setFieldValue} />
             <PriceCategory errors={errors} isService={true} />
             <Field
@@ -160,7 +184,11 @@ const CreateService = ({
               maxValue={today(getLocalTimeZone()).add({ years: 10 })}
             />
             <Divider />
-            <h6>Busque su ubicación o seleccionela en el mapa</h6>
+            <h6>
+              {isAdSpace
+                ? "¿Desde dónde se publica? El espacio se ve para quien esté dentro del radio que elijas."
+                : "Busque su ubicación o seleccionela en el mapa"}
+            </h6>
             <PlacePicker
               location={values.geoLocation}
               setFieldValue={setFieldValue}
@@ -178,7 +206,11 @@ const CreateService = ({
               type="submit"
               className="mt-4"
             >
-              {isSubmitting ? `Publicando ${progress}%` : "Crear Anuncio"}
+              {isSubmitting
+                ? `Publicando ${progress}%`
+                : isAdSpace
+                  ? "Publicar espacio publicitario"
+                  : "Crear Anuncio"}
             </PrimaryButton>
             {Object.keys(errors).length > 0 && (
               <p className="text-danger text-sm">

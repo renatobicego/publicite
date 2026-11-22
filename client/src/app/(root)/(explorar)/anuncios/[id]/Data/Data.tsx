@@ -1,6 +1,8 @@
 import { getTimeBetweenToday } from "@/utils/functions/dates";
 import { conditionItems, frequencyPriceItems } from "@/utils/data/selectData";
-import { Good, Petition, Service } from "@/types/postTypes";
+import { AdSpacePost, Good, Petition, Service } from "@/types/postTypes";
+import AdSpaceDetails from "./AdSpaceDetails";
+import { adSpaceMediumOf } from "@/utils/data/adSpaces";
 import { parseDateTime } from "@internationalized/date";
 import ReviewsStars from "./ReviewsStars";
 import CategoryChip from "@/components/chips/CategoryChip";
@@ -32,7 +34,7 @@ const Data = async ({
   isAuthor,
   isPetition,
 }: {
-  post: Good | Service | Petition;
+  post: Good | Service | Petition | AdSpacePost;
   isAuthor: boolean;
   isPetition: boolean;
 }) => {
@@ -54,6 +56,7 @@ const Data = async ({
         if (good.price === 8613.1) return "Negociable / a pactar";
         return good.price ? `$${formatTotal(good.price)}` : "Consultar precio";
       case "service":
+      case "adspace":
         if (service.price === 8613.1) return "Negociable / a pactar";
         return service.price
           ? `$${formatTotal(service.price)} ${service.frequencyPrice &&
@@ -110,10 +113,19 @@ const Data = async ({
             {(post.category as any)[0] ? (post.category as any)[0].label : ""}
           </CategoryChip>
           {post.postType === "petition" && <PetitionChip />}
+          {post.postType === "adspace" && (
+            <span className="rounded-full bg-warning-100 px-3 py-1 text-xs font-semibold text-warning-700">
+              Espacio publicitario ·{" "}
+              {adSpaceMediumOf((post as AdSpacePost).adSpace?.medium)?.label}
+            </span>
+          )}
           {post.postType === "service" ||
             (petition.petitionType === "service" && <ServiceChip />)}
         </div>
         <p className="text-small md:text-sm xl:text-base">{post.description}</p>
+        {post.postType === "adspace" && (
+          <AdSpaceDetails post={post as AdSpacePost} />
+        )}
         <div className="flex w-full justify-between max-lg:flex-wrap gap-2">
           {isAuthor ? (
             <PrimaryButton as={Link} href={`${EDIT_POST}/${post._id}`}>

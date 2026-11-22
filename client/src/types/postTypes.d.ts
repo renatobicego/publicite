@@ -152,6 +152,64 @@ export interface ServicePostValues
     > {
   frequencyPrice?: FrequencyPrice;
 }
+/** Medio de un espacio publicitario (cada uno es una solapa de Explorar). */
+export type AdSpaceMedium =
+  | "radio"
+  | "streaming"
+  | "tv"
+  | "outdoor"
+  | "newspaper"
+  | "magazine"
+  | "influencer";
+
+export type AdSpaceCoverage =
+  | "neighborhood"
+  | "city"
+  | "district"
+  | "province"
+  | "region"
+  | "country"
+  | "international";
+
+/** Datos propios de un espacio publicitario. Ver `utils/data/adSpaces.ts`. */
+export interface AdSpaceData {
+  medium: AdSpaceMedium;
+  mediaName: string;
+  audience?: string | null;
+  formats?: string[];
+  mediaUrl?: string | null;
+  coverageArea?: AdSpaceCoverage | null;
+  coverageName?: string | null;
+  placeAddress?: string | null;
+  band?: "AM" | "FM" | null;
+  frequency?: string | null;
+  platform?: string | null;
+  program?: string | null;
+  schedule?: string | null;
+  outdoorType?: string | null;
+  dimensions?: string | null;
+  illuminated?: boolean | null;
+  edition?: "print" | "digital" | "both" | null;
+  periodicity?: string | null;
+  circulation?: string | null;
+  section?: string | null;
+  networks?: string[];
+  handle?: string | null;
+  followers?: number | null;
+  engagement?: string | null;
+}
+
+export interface AdSpacePost extends Post {
+  imagesUrls: string[];
+  frequencyPrice: FrequencyPrice;
+  reviews: PostReview[];
+  adSpace: AdSpaceData;
+}
+
+export interface AdSpacePostValues extends ServicePostValues {
+  adSpace: AdSpaceData;
+}
+
 export interface Petition extends Post {
   frequencyPrice?: FrequencyPrice;
   toPrice?: number | null;

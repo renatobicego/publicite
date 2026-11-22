@@ -1,3 +1,5 @@
+import { AdAgentProfile } from '../../application/functions/adAgent';
+import { PayoutAccount } from '../../application/functions/payoutAccounts';
 import { IdentityVerificationRecord } from 'src/contexts/module_user/identity/domain/identity.verification.types';
 import { ClientSession, Types } from 'mongoose';
 
@@ -149,6 +151,17 @@ export interface UserServiceInterface {
     credentialColor: string | null;
     previousCredentialPhotoUrl: string | null;
   }>;
+  getPayoutAccounts(userRequestId: string): Promise<PayoutAccount[]>;
+  isAdAgent(userId: string): Promise<boolean>;
+  getAdAgentProfile(userId: string): Promise<AdAgentProfile | null>;
+  updateAdAgent(
+    userRequestId: string,
+    input: { website?: string; taxCondition?: string; taxNote?: string },
+  ): Promise<AdAgentProfile>;
+  updatePayoutAccounts(
+    userRequestId: string,
+    accounts: { label?: string | null; aliasCbu: string }[],
+  ): Promise<PayoutAccount[]>;
   setSubscriptionToUser(
     external_reference: string,
     sub_id: any,

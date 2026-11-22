@@ -11,6 +11,8 @@ interface PostCardBodyProps {
   price: string;
   isService: boolean;
   isGroupPost: boolean;
+  /** Espacio publicitario: medio y nombre (ej. "Radio · Radio Sol"). */
+  adSpaceLabel?: string;
 }
 
 const PostCardBody = ({
@@ -20,6 +22,7 @@ const PostCardBody = ({
   price,
   isService,
   isGroupPost,
+  adSpaceLabel,
 }: PostCardBodyProps) => {
   const averageRating =
     reviews && reviews.length > 0
@@ -42,7 +45,13 @@ const PostCardBody = ({
             </div>
           )}
       </div>
-      {isService && <ServiceChip />}
+      {adSpaceLabel ? (
+        <span className="self-start rounded-full bg-warning-100 px-2 py-0.5 text-xs font-semibold text-warning-700">
+          {adSpaceLabel}
+        </span>
+      ) : (
+        isService && <ServiceChip />
+      )}
       <p className="text-light-text line-clamp-2 text-xs lg:text-small 2xl:text-sm ">
         {description}
       </p>

@@ -43,6 +43,7 @@ const PostCard = ({
           />
         );
       case "service":
+      case "adspace":
         return (
           <ServiceCard
             post={postData as Service}

@@ -19,6 +19,11 @@ import {
 } from '../schemas/post-types-schemas/post.service.schema';
 import { PostService } from '../../domain/entity/post-types/post.service.entity';
 import { PostPetition } from '../../domain/entity/post-types/post.petition.entity';
+import { PostAdSpace } from '../../domain/entity/post-types/post.adspace.entity';
+import {
+  IPostAdSpace,
+  PostAdSpaceModel,
+} from '../schemas/post-types-schemas/post.adspace.schema';
 import {
   IPostPetition,
   PostPetitionModel,
@@ -65,6 +70,9 @@ export class PostRepository implements PostRepositoryInterface {
 
     @InjectModel(PostPetitionModel.modelName)
     private readonly postPetitionDocument: Model<IPostPetition>,
+
+    @InjectModel(PostAdSpaceModel.modelName)
+    private readonly postAdSpaceDocument: Model<IPostAdSpace>,
 
     @InjectModel(UserModel.modelName)
     private readonly userDocument: Model<IUser>,
@@ -145,6 +153,13 @@ export class PostRepository implements PostRepositoryInterface {
           return this.savePetitionPost(
             documentToSave,
             post as PostPetition,
+            options,
+          );
+
+        case PostType.adspace:
+          return this.saveAdSpacePost(
+            documentToSave,
+            post as PostAdSpace,
             options,
           );
 
@@ -813,6 +828,7 @@ export class PostRepository implements PostRepositoryInterface {
     userLocation: UserLocation,
     searchTerm?: string,
     userRequestId?: string,
+    adSpaceMedium?: string,
   ): Promise<any> {
     try {
       this.logger.log(`Finding posts by postType: ${postType}`);
@@ -825,6 +841,8 @@ export class PostRepository implements PostRepositoryInterface {
         isActive: true,
         endDate: { $gte: today },
       };
+      // Espacios publicitarios: sub-solapa por medio (radio, TV…).
+      if (adSpaceMedium) matchStage['adSpace.medium'] = adSpaceMedium;
 
       if (userRequestId) {
         matchStage.author = { $ne: userRequestId };
@@ -1588,6 +1606,32 @@ export class PostRepository implements PostRepositoryInterface {
     }
   }
 
+  async saveAdSpacePost(
+    baseObj: any,
+    post: PostAdSpace,
+    options?: { session?: ClientSession },
+  ): Promise<string | null> {
+    const postPostedDocument = new this.postAdSpaceDocument({
+      ...baseObj,
+      frequencyPrice: post.getfrequencyPrice,
+      imagesUrls: post.getImageUrls,
+      reviews: post.getReviews,
+      adSpace: post.getAdSpace,
+    });
+    const documentSaved: any = await postPostedDocument.save(options);
+    this.logger.log('Post ad space created successfully');
+    return documentSaved._id.toString() ?? null;
+  }
+
+  /** Tipo de un anuncio (para reglas que dependen de él), o null si no existe. */
+  async findPostTypeById(id: string): Promise<string | null> {
+    const doc: any = await this.postDocument
+      .findById(id)
+      .select('postType')
+      .lean();
+    return doc?.postType ?? null;
+  }
+
   async setCommenOnPost(
     postId: string,
     postCommentId: string,
@@ -1660,6 +1704,14 @@ export class PostRepository implements PostRepositoryInterface {
           postId = await this.postPetitionDocument.findByIdAndUpdate(
             id,
             postUpdate,
+          );
+          return postId?._id;
+        case PostType.adspace:
+          this.logger.warn('Updating POST TYPE: ' + postType);
+          postId = await this.postAdSpaceDocument.findByIdAndUpdate(
+            id,
+            postUpdate,
+            { runValidators: true },
           );
           return postId?._id;
         default:

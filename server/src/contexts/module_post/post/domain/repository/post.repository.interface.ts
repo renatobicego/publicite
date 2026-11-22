@@ -87,6 +87,7 @@ export interface PostRepositoryInterface {
     userLocation: UserLocation,
     searchTerm?: string,
     userRequestId?: string,
+    adSpaceMedium?: string,
   ): Promise<any>;
   findAllPosts(
     page: number,
@@ -136,6 +137,7 @@ export interface PostRepositoryInterface {
     postType: string,
   ): Promise<any>;
   /** Autor, fotos/videos y sus pesos (para el cupo de almacenamiento). */
+  findPostTypeById(id: string): Promise<string | null>;
   findMediaInfo(id: string): Promise<{
     author: string;
     imagesUrls: string[];

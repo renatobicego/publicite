@@ -14,10 +14,13 @@ const SelectPostBehaviourType = ({
   type,
   setType,
   errorMessage,
+  agendaDisabledReason,
 }: {
   type?: PostBehaviourType;
   setType: (type: PostBehaviourType) => void;
   errorMessage?: string;
+  /** Si viene, la agenda no se puede elegir y se explica por qué. */
+  agendaDisabledReason?: string;
 }) => {
   return (
     <div id="post-behaviour" className="flex-col flex gap-1 justify-start">
@@ -40,6 +43,7 @@ const SelectPostBehaviourType = ({
           color="warning"
           className="flex-1 h-auto min-h-20 py-3 flex-col gap-1 whitespace-normal text-center"
           onPress={() => setType("agenda")}
+          isDisabled={!!agendaDisabledReason}
           startContent={<FaUser className="size-5" />}
         >
           <span className="font-semibold">{POST_BEHAVIOUR_LABEL.agenda}</span>
@@ -47,6 +51,9 @@ const SelectPostBehaviourType = ({
         </Button>
       </div>
       {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+      {agendaDisabledReason && (
+        <p className="text-xs text-default-500">{agendaDisabledReason}</p>
+      )}
       {type ? (
         <p className="text-sm rounded-lg bg-default-100 px-3 py-2">
           Se publica en: <strong>{POST_BEHAVIOUR_DESTINATION[type]}</strong>

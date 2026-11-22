@@ -71,16 +71,5 @@ export function computeTicketExpiration(
   return new Date(activatedAt.getTime() + durationHours * 60 * 60 * 1000);
 }
 
-const CBU_REGEX = /^\d{22}$/;
-const ALIAS_REGEX = /^[a-zA-Z0-9.-]{6,20}$/;
-
 /** Alias (6 a 20 caracteres) o CBU/CVU (22 dígitos) para liquidar (TKT-11). */
-export function normalizeAliasCbu(value: string): string {
-  const normalized = (value ?? '').trim();
-  if (!CBU_REGEX.test(normalized) && !ALIAS_REGEX.test(normalized)) {
-    throw new BadRequestException(
-      'Ingresá un alias válido (6 a 20 caracteres: letras, números, puntos o guiones) o un CBU/CVU de 22 dígitos',
-    );
-  }
-  return normalized;
-}
+export { normalizeAliasCbu } from 'src/contexts/module_shared/payout/alias-cbu';

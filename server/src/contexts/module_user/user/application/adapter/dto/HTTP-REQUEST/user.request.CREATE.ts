@@ -80,4 +80,10 @@ export interface UserPersonRequest extends UserRequest {
 export interface UserBusinessRequest extends UserRequest {
   sector: ObjectId;
   businessName: string;
+  /** Sólo en el alta de una cuenta Empresa / Agente. */
+  adAgent?: {
+    website: string;
+    taxCondition: string;
+    taxNote: string;
+  } | null;
 }

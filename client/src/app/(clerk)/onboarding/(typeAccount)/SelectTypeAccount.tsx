@@ -3,7 +3,10 @@ import CardTypeAccount from "./CardTypeAccount";
 import { Divider } from "@nextui-org/react";
 
 const SelectTypeAccount = () => {
-  const accountTypes: { type: "person" | "company"; label: string }[] = [
+  const accountTypes: {
+    type: "person" | "company" | "agent";
+    label: string;
+  }[] = [
     {
       type: "person",
       label: "Persona",
@@ -11,6 +14,11 @@ const SelectTypeAccount = () => {
     {
       type: "company",
       label: "Empresa",
+    },
+    {
+      // Única que puede publicar espacios publicitarios (radio, TV…).
+      type: "agent",
+      label: "Empresa / Agente",
     },
   ];
   return (
@@ -22,7 +30,7 @@ const SelectTypeAccount = () => {
         </p>
       </div>
       <Divider />
-      <div className="flex gap-4">
+      <div className="flex gap-4 max-md:flex-col">
         {accountTypes.map((accountType) => (
           <CardTypeAccount
             key={accountType.type}
@@ -31,6 +39,11 @@ const SelectTypeAccount = () => {
           />
         ))}
       </div>
+      <p className="small-text text-center max-w-md">
+        Elegí <strong>Empresa / Agente</strong> si tenés un espacio
+        publicitario (radio, streaming, TV, vía pública, diario, revista o
+        influencer) y querés publicarlo para que te contacten.
+      </p>
     </div>
   );
 };

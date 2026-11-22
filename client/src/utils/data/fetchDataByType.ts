@@ -1,3 +1,4 @@
+import type { AdSpaceMedium } from "@/types/postTypes";
 import { Coordinates } from "@/app/(root)/providers/LocationProvider";
 import { getBoards } from "@/services/boardServices";
 import { getGroupPosts, getGroups } from "@/services/groupsService";
@@ -22,7 +23,10 @@ export type PostsDataTypes =
         | "petition"
         | "goodService"
         | "all"
-        | "libre";
+        | "libre"
+        | "adspace";
+      /** Sólo espacios publicitarios: sub-solapa por medio. */
+      adSpaceMedium?: AdSpaceMedium;
     }
   | {
       typeOfData: "contactPosts";
@@ -65,7 +69,14 @@ export const fetchDataByType = async (
         console.log("fetching libre posts with coordinates:", coordinates);
         return await getAllPostsLibre(searchTerm, page, coordinates);
       }
-      return await getPosts(searchTerm, page, postType.postType, coordinates);
+      return await getPosts(
+        searchTerm,
+        page,
+        postType.postType,
+        coordinates,
+        20,
+        postType.adSpaceMedium
+      );
     case "boards":
       return await getBoards(searchTerm, page);
     case "groups":

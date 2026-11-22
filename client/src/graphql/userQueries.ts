@@ -368,6 +368,58 @@ export const updateMyCredentialMutation = gql`
   }
 `;
 
+export const getAdAgentProfileQuery = gql`
+  query GetAdAgentProfile($userId: String!) {
+    getAdAgentProfile(userId: $userId) {
+      userId
+      businessName
+      countryRegion
+      website
+      taxCondition
+      taxNote
+    }
+  }
+`;
+
+export const updateMyAdAgentProfileMutation = gql`
+  mutation UpdateMyAdAgentProfile(
+    $website: String!
+    $taxCondition: AdAgentTaxCondition!
+    $taxNote: String!
+  ) {
+    updateMyAdAgentProfile(
+      website: $website
+      taxCondition: $taxCondition
+      taxNote: $taxNote
+    ) {
+      userId
+      businessName
+      countryRegion
+      website
+      taxCondition
+      taxNote
+    }
+  }
+`;
+
+export const getMyPayoutAccountsQuery = gql`
+  query GetMyPayoutAccounts {
+    getMyPayoutAccounts {
+      label
+      aliasCbu
+    }
+  }
+`;
+
+export const updateMyPayoutAccountsMutation = gql`
+  mutation UpdateMyPayoutAccounts($accounts: [User_PayoutAccount_Input!]!) {
+    updateMyPayoutAccounts(accounts: $accounts) {
+      label
+      aliasCbu
+    }
+  }
+`;
+
 export const deleteUserRelationMutation = gql`
   mutation RemoveFriend($relationId: String!) {
     removeFriend(relationId: $relationId)

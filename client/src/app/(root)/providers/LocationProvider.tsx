@@ -45,6 +45,7 @@ export const isLocationAwarePostType = (type: PubliciteDataTypes) => {
       "goodService",
       "all",
       "libre",
+      "adspace",
     ].includes(type.postType);
   }
 };

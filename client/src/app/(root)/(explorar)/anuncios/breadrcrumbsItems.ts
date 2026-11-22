@@ -5,6 +5,7 @@ import {
   POST_NEXT_TO_EXPIRE,
   POST_RECENTS,
   POSTS,
+  POST_AD_SPACES,
 } from "@/utils/data/urls";
 
 export const postsBaseBreadcrumbsItems = [
@@ -71,5 +72,16 @@ export const recentsPostBreadcrumbsItems = [
   {
     label: "Recientes",
     href: `${POST_RECENTS}`,
+  },
+];
+
+export const adSpacesBreadcrumbsItems = [
+  {
+    label: "Inicio",
+    href: "/",
+  },
+  {
+    label: "Espacios publicitarios",
+    href: POST_AD_SPACES,
   },
 ];

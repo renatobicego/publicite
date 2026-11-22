@@ -1,14 +1,18 @@
 "use client";
 
-import { postTypesItems } from "@/utils/data/selectData";
-import { Button, Select, SelectItem } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
+
+export type CreatePostKind = "good" | "service" | "adspace";
 
 const SelectType = ({
   type,
   setType,
+  canPublishAdSpace = false,
 }: {
-  type?: "good" | "service";
-  setType: (type: "good" | "service") => void;
+  type?: CreatePostKind;
+  setType: (type: CreatePostKind) => void;
+  /** Sólo las cuentas Empresa / Agente publican espacios publicitarios. */
+  canPublishAdSpace?: boolean;
 }) => {
   return (
     <div id="post-behaviour" className="flex-col flex gap-1 justify-start">
@@ -30,6 +34,16 @@ const SelectType = ({
         >
           Servicio
         </Button>
+        {canPublishAdSpace && (
+          <Button
+            variant={type === "adspace" ? "solid" : "flat"}
+            color="secondary"
+            className="flex-1 h-20 text-center whitespace-normal"
+            onPress={() => setType("adspace")}
+          >
+            Espacio publicitario
+          </Button>
+        )}
       </div>
     </div>
     // <Select

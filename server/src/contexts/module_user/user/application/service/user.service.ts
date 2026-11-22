@@ -19,6 +19,11 @@ import { UP_clerkUpdateRequestDto } from 'src/contexts/module_webhook/clerk/appl
 import { UserFindAllResponse } from '../adapter/dto/HTTP-RESPONSE/user.response.dto';
 import { UserType } from '../../domain/entity/enum/user.enums';
 import { CredentialInput, normalizeCredential } from '../functions/credential';
+import {
+  PayoutAccount,
+  normalizePayoutAccounts,
+} from '../functions/payoutAccounts';
+import { AdAgentProfile, normalizeAdAgentData } from '../functions/adAgent';
 import { UserRelation } from '../../domain/entity/userRelation.entity';
 import {
   calculateContactLimitFromUser,
@@ -924,6 +929,59 @@ export class UserService implements UserServiceInterface {
     } catch (error: any) {
       throw error;
     }
+  }
+
+  /** `true` si es una cuenta Empresa / Agente (publica espacios publicitarios). */
+  async isAdAgent(userId: string): Promise<boolean> {
+    const user = await this.userRepository.findAdAgentProfile(userId);
+    return !!user?.adAgent;
+  }
+
+  async getAdAgentProfile(userId: string): Promise<AdAgentProfile | null> {
+    const user = await this.userRepository.findAdAgentProfile(userId);
+    if (!user?.adAgent) return null;
+    return {
+      userId: user._id,
+      businessName: user.businessName ?? null,
+      countryRegion: user.countryRegion ?? null,
+      website: user.adAgent.website,
+      taxCondition: user.adAgent.taxCondition,
+      taxNote: user.adAgent.taxNote,
+    };
+  }
+
+  /** Edita el sitio web y los impuestos de una cuenta que ya es agente. */
+  async updateAdAgent(
+    userRequestId: string,
+    input: { website?: string; taxCondition?: string; taxNote?: string },
+  ): Promise<AdAgentProfile> {
+    const adAgent = normalizeAdAgentData(input as any);
+    const updated = await this.userRepository.updateAdAgent(userRequestId, adAgent);
+    if (!updated) {
+      throw new BadRequestException('Tu cuenta no es una cuenta Empresa / Agente.');
+    }
+    return (await this.getAdAgentProfile(userRequestId))!;
+  }
+
+  /** Cuentas de cobro guardadas del usuario (alias o CBU/CVU). */
+  async getPayoutAccounts(userRequestId: string): Promise<PayoutAccount[]> {
+    const accounts = await this.userRepository.getPayoutAccounts(userRequestId);
+    if (!accounts) throw new BadRequestException('Usuario no encontrado.');
+    return accounts.map((a) => ({ label: a.label ?? null, aliasCbu: a.aliasCbu }));
+  }
+
+  /** Reemplaza la lista entera de cuentas de cobro. Vacía = quitar todas. */
+  async updatePayoutAccounts(
+    userRequestId: string,
+    accounts: { label?: string | null; aliasCbu: string }[],
+  ): Promise<PayoutAccount[]> {
+    const normalized = normalizePayoutAccounts(accounts);
+    const found = await this.userRepository.updatePayoutAccounts(
+      userRequestId,
+      normalized,
+    );
+    if (!found) throw new BadRequestException('Usuario no encontrado.');
+    return normalized;
   }
 
   async updateFriendRelationOfUsers(

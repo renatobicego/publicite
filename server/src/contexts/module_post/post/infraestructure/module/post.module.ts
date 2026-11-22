@@ -4,6 +4,7 @@ import PostModel from '../schemas/post.schema';
 
 import { MyLoggerService } from 'src/contexts/module_shared/logger/logger.service';
 import { PostGoodModel } from '../schemas/post-types-schemas/post.good.schema';
+import { PostAdSpaceModel } from '../schemas/post-types-schemas/post.adspace.schema';
 import { PostServiceModel } from '../schemas/post-types-schemas/post.service.schema';
 import { PostPetitionModel } from '../schemas/post-types-schemas/post.petition.schema';
 import { PostAdapterMapper } from '../adapter/mapper/post.adapter.mapper';
@@ -40,6 +41,7 @@ import {
         discriminators: [
           { name: PostGoodModel.modelName, schema: PostGoodModel.schema },
           { name: PostServiceModel.modelName, schema: PostServiceModel.schema },
+          { name: PostAdSpaceModel.modelName, schema: PostAdSpaceModel.schema },
           {
             name: PostPetitionModel.modelName,
             schema: PostPetitionModel.schema,

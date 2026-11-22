@@ -1,7 +1,7 @@
 import BreadcrumbsAdmin from "@/components/BreadcrumbsAdmin";
 import ErrorCard from "@/components/ErrorCard";
 import { getPostData } from "@/services/postsServices";
-import { Good, Service } from "@/types/postTypes";
+import { AdSpacePost, Good, Service } from "@/types/postTypes";
 import { EDIT_PETITION, EDIT_POST, POSTS } from "@/utils/data/urls";
 import { redirect } from "next/navigation";
 import EditPostClient from "./EditPost";
@@ -10,7 +10,8 @@ export default async function EditPost(props: {
   params: Promise<{ id: string }>;
 }) {
   const params = await props.params;
-  const postData: Good | Service | { error: string } = await getPostData(
+  const postData: Good | Service | AdSpacePost | { error: string } =
+    await getPostData(
     params.id
   );
   const userLogged = await auth();

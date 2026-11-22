@@ -125,6 +125,15 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
                 digitales en Soon › Agenda de contactos.
               </li>
               <li>
+                Espacios publicitarios: radios, streaming, TV, vía pública,
+                diarios, revistas e influencers publican su espacio para que
+                las marcas los contacten. Están en Anuncios › Espacios
+                publicitarios, con una solapa por medio. Sólo los publican las
+                cuentas Empresa / Agente (se elige al registrarse) y son
+                siempre geolocalizados. Soonpublicité genera el contacto, no
+                realiza ventas.
+              </li>
+              <li>
                 Revistas: Podrás crear revistas, propias o compartidas, y desde
                 las mismas, secciones. ¡Envía todo tipo de anuncios para crear
                 tus revistas y secciones!
@@ -337,6 +346,11 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
                 una clave de acceso o elige cómo se entra a cada cosa: libre
                 (sin ticket), con ticket gratuito (el visitante lo saca con un
                 clic y vos sabés cuánta gente entra) o con ticket pago.
+              </li>
+              <li>
+                Cuentas de cobro: en Administrar cuenta › Suscripción guardás
+                uno o varios alias o CBU/CVU. Al configurar un ticket pago los
+                elegís con un toque, sin volver a escribirlos.
               </li>
               <li>
                 Sólo yo: deja el blog, una carpeta, un archivo o un artículo

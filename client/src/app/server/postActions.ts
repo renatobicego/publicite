@@ -32,8 +32,12 @@ export const createPost = async (
     });
     return { message: "Anuncio creado exitosamente", id: resApi };
   } catch (err) {
+    // Espacios publicitarios: el server explica qué falta o por qué no se puede.
+    const adSpaceMessage =
+      formData?.postType === "adspace" ? getProductionErrorMessage(err) : null;
     return {
       error:
+        adSpaceMessage ??
         storageErrorMessage(err) ??
         "Error al crear el anuncio. Por favor intenta de nuevo.",
     };

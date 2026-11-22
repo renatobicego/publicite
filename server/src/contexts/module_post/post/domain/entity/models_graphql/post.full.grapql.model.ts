@@ -1,3 +1,4 @@
+import { AdSpace_Graphql } from './adspace.graphql';
 import { ObjectId } from 'mongoose';
 import { Field, ObjectType, ID, Float, Int } from '@nestjs/graphql';
 import { GoodCondition } from '../enum/post-good-condition.enum';
@@ -112,4 +113,8 @@ export class Post_Full_Graphql_Model {
 
   @Field(() => String, { nullable: true })
   petitionType: string;
+
+  //Fields post AdSpace
+  @Field(() => AdSpace_Graphql, { nullable: true })
+  adSpace?: AdSpace_Graphql;
 }
