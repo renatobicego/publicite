@@ -16,6 +16,7 @@ import TabTitle from "@/components/solapas/TabTitle";
 import SelectManualLocationModal from "@/components/modals/SelectManualLocation/SelectManualLocationModal";
 import { INITIAL_LOCATION } from "@/components/modals/SelectManualLocation/ManualLocationPicker";
 import { useLocation } from "@/app/(root)/providers/LocationProvider";
+import { withGeoAreas } from "@/utils/functions/geoAreas";
 import { useUserData } from "@/app/(root)/providers/userDataProvider";
 import { CREATE_PRODUCTION, PROFILE } from "@/utils/data/urls";
 import {
@@ -107,7 +108,9 @@ const ProductionsLogic = ({
           resolved = coordinates;
         }
       }
-      if (active) setUserLocation(resolved);
+      // Con la zona de quien mira, para los blogs limitados a una zona.
+      const located = await withGeoAreas(resolved);
+      if (active) setUserLocation(located);
     };
     resolve();
     return () => {

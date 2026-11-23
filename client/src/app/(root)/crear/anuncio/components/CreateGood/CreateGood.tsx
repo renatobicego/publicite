@@ -105,6 +105,13 @@ const CreateGood = ({
       ratio: values.geoLocation.ratio
         ? values.geoLocation.ratio * 1000
         : 5 * 1000,
+      // Radio, zona o todo el mundo (ver utils/data/geoReach.ts).
+      scope: values.geoLocation.scope ?? "radius",
+      zoneLevel:
+        values.geoLocation.scope === "zone"
+          ? values.geoLocation.zoneLevel ?? null
+          : null,
+      areas: values.geoLocation.areas ?? null,
     };
 
     const attachedFiles = values.attachedFiles.map((file) => ({

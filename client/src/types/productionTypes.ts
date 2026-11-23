@@ -1,3 +1,4 @@
+import type { GeoAreas, GeoAreasInput, GeoReachScope, GeoZoneLevel } from "@/utils/data/geoReach";
 // Tipos de "Mis Producciones" (module_production).
 // Fuente: contrato-API-mis-producciones-FRONT.md.
 // Se agregan por fase; esta primera tanda cubre el núcleo del blog (Fase 1).
@@ -71,8 +72,8 @@ export enum ProductionBehaviourType {
 export interface ProductionExploreFilters {
   /** Sin valor: "Todas". */
   behaviourType?: ProductionBehaviourType;
-  /** Ubicación del visitante para el radio de los blogs libres. */
-  userLocation?: { latitude: number; longitude: number } | null;
+  /** Ubicación del visitante (y su zona) para el alcance de los blogs libres. */
+  userLocation?: { latitude: number; longitude: number; areas?: GeoAreasInput | null } | null;
   /** Agenda: tipo de relación (hierarchy = todas). */
   relation?: "hierarchy" | "contacts" | "friends" | "topfriends";
   /** Sub-solapa por el ticket del blog completo (sin valor = todos). */
@@ -93,6 +94,19 @@ export interface ProductionGeoLocation {
   description?: string | null;
   userSetted?: boolean | null;
   ratio: number;
+  /** Radio, zona o todo el mundo (sin valor = radio). */
+  scope?: GeoReachScope | null;
+  zoneLevel?: GeoZoneLevel | null;
+}
+
+/** Ubicación guardada de un blog (lo que devuelve el server). */
+export interface ProductionGeoLocationResponse extends ProductionGeoLocation {
+  areas?: GeoAreas | null;
+}
+
+/** Ubicación que se manda al server (con las zonas del geocodificador). */
+export interface ProductionGeoLocationInput extends ProductionGeoLocation {
+  areas?: GeoAreasInput | null;
 }
 
 export enum ProductionShelfCategory {
@@ -265,7 +279,7 @@ export interface ProductionResponse {
   /** Sólo blogs personales; null en blogs de grupo. */
   behaviourType?: ProductionBehaviourType | null;
   /** Sólo blogs libres. */
-  geoLocation?: ProductionGeoLocation | null;
+  geoLocation?: ProductionGeoLocationResponse | null;
   shelf: ProductionShelfLink[];
   showcase: string[];
   /** Vigencia: desde cuándo se ve el blog (ISO). null = siempre. */
@@ -431,7 +445,7 @@ export interface ProductionCreateRequest {
   /** Sólo blogs personales. */
   behaviourType?: ProductionBehaviourType;
   /** Obligatorio en blogs libres. */
-  geoLocation?: ProductionGeoLocation;
+  geoLocation?: ProductionGeoLocationInput;
   shelf?: ProductionShelfLinkInput[];
   /** Vigencia (ISO): inicio del día elegido. */
   activeFrom?: string;
@@ -452,7 +466,7 @@ export interface ProductionUpdateRequest {
   /** null quita la fecha de cierre. */
   activeUntil?: string | null;
   /** Sólo blogs libres. */
-  geoLocation?: ProductionGeoLocation;
+  geoLocation?: ProductionGeoLocationInput;
 }
 
 export interface ProductionFolderRequest {

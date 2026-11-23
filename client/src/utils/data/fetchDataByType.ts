@@ -1,5 +1,9 @@
 import type { AdSpaceMedium } from "@/types/postTypes";
-import { Coordinates } from "@/app/(root)/providers/LocationProvider";
+import {
+  Coordinates,
+  isLocationAwarePostType,
+} from "@/app/(root)/providers/LocationProvider";
+import { withGeoAreas } from "@/utils/functions/geoAreas";
 import { getBoards } from "@/services/boardServices";
 import { getGroupPosts, getGroups } from "@/services/groupsService";
 import {
@@ -48,8 +52,14 @@ export const fetchDataByType = async (
   postType: PubliciteDataTypes,
   searchTerm: string | null,
   page: number,
-  coordinates: Coordinates | null
+  rawCoordinates: Coordinates | null
 ) => {
+  // Las listas con ubicación también mandan la zona de quien mira (barrio,
+  // ciudad, provincia…) para los anuncios limitados a una zona.
+  const coordinates =
+    rawCoordinates && isLocationAwarePostType(postType)
+      ? await withGeoAreas(rawCoordinates)
+      : rawCoordinates;
   switch (postType.typeOfData) {
     case "posts":
       if (postType.postType === "goodService") {

@@ -8,6 +8,8 @@ import {
 import { PostBehaviourType } from '../../enum/postBehaviourType.enum';
 import { PostMediaSizeInput } from './post.media-size.request';
 import { AdSpaceInput } from '../adspace.graphql';
+import { GeoReachScope, GeoZoneLevel } from 'src/contexts/module_shared/geo-reach/geo-reach.enums';
+import { GeoAreasInput } from 'src/contexts/module_shared/geo-reach/geo-reach.graphql';
 
 @InputType()
 class VisibilityOfPost {
@@ -48,6 +50,18 @@ class LocationOfPost {
 
   @Field(() => Number)
   ratio: number;
+
+  @Field(() => GeoReachScope, {
+    nullable: true,
+    description: 'radius (default) = dentro del radio; zone = sólo en una zona; world = todo el mundo',
+  })
+  scope?: GeoReachScope | null;
+
+  @Field(() => GeoZoneLevel, { nullable: true, description: 'Nivel de zona (sólo con scope zone)' })
+  zoneLevel?: GeoZoneLevel | null;
+
+  @Field(() => GeoAreasInput, { nullable: true, description: 'Zonas del punto, del geocodificador' })
+  areas?: GeoAreasInput | null;
 }
 
 @InputType()

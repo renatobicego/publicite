@@ -1,3 +1,4 @@
+import { GeoReachScope } from 'src/contexts/module_shared/geo-reach/geo-reach.enums';
 import { Production } from '../../domain/entity/production.entity';
 import {
   ProductionArticle,
@@ -40,6 +41,9 @@ function toGeoLocationResponse(production: Production) {
     description: geo.description,
     userSetted: geo.userSetted,
     ratio: geo.ratio,
+    scope: geo.scope ?? GeoReachScope.radius,
+    zoneLevel: geo.zoneLevel ?? null,
+    areas: geo.areas ?? null,
   };
 }
 

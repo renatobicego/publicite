@@ -13,6 +13,7 @@ import { removeAccents_removeEmojisAndToLowerCase } from '../../domain/utils/nor
 import { PostRequest } from '../../domain/entity/models_graphql/HTTP-REQUEST/post.request';
 import { Schema } from 'mongoose';
 import { FrequencyPrice } from '../../domain/entity/enum/post-service-freq-type.enum';
+import { normalizeGeoReach } from 'src/contexts/module_shared/geo-reach/geo-reach';
 
 export class PostFactory implements PostFactoryInterface {
   private static instance: PostFactory | null = null;
@@ -55,6 +56,17 @@ export class PostFactory implements PostFactoryInterface {
     );
     const isActive = true;
     post.geoLocation.location.type = 'Point';
+    // Radio, zona o mundo: valida que el punto tenga la zona elegida.
+    const { scope, zoneLevel, areas } = normalizeGeoReach(post.geoLocation);
+    const geoLocation = {
+      location: post.geoLocation.location,
+      userSetted: post.geoLocation.userSetted,
+      description: post.geoLocation.description,
+      ratio: post.geoLocation.ratio,
+      scope,
+      zoneLevel,
+      areas,
+    };
 
     const postBase = new Post(
       post.title,
@@ -66,7 +78,7 @@ export class PostFactory implements PostFactoryInterface {
       visibilityNormalizated,
       [] as any, // recomendations
       post.price ?? 0,
-      post.geoLocation,
+      geoLocation,
       post.category ?? [],
       postComments,
       post.attachedFiles ?? ([postAttachedEmpty] as any),

@@ -29,6 +29,8 @@ import WorkspaceChat from "../WorkspaceChat";
 import ImageEditor from "./ImageEditor";
 import SendToBlogModal from "@/app/(root)/(explorar)/producciones/components/SendToBlogModal";
 import { dataUrlToFile } from "../shared/dataUrlToFile";
+import { toPng } from "html-to-image";
+import type { ValuacionResult } from "@/types/workspaceTypes";
 
 interface WorkboardPanelProps {
     workspace: ReturnType<typeof useWorkspace>;
@@ -66,16 +68,34 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
         openChatSession,
         startNewChat,
         deleteChatSession,
+        studioImages,
+        selectedStudioIds,
+        toggleStudioSelection,
+        clearStudioSelection,
+        addGeneratedToStudio,
     } = workspace;
+    const selectedStudio = studioImages.filter((img) => selectedStudioIds.includes(img.id));
     const [showHistory, setShowHistory] = useState(false);
 
     const [inputValue, setInputValue] = useState("");
-    const [isImageMode, setIsImageMode] = useState(false);
+    const [imageModeOn, setImageModeOn] = useState(false);
     const [editingImageUrl, setEditingImageUrl] = useState<string | null>(null);
     const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
     // Imagen generada que se está enviando a un blog de Mis Producciones.
     const [imageForBlog, setImageForBlog] = useState<{ id: string; base64: string } | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    // Con imágenes del panel elegidas como referencia se está en modo imagen;
+    // salir del modo imagen las deja de usar.
+    const isImageMode = imageModeOn || selectedStudioIds.length > 0;
+    const toggleImageMode = () => {
+        if (isImageMode) {
+            setImageModeOn(false);
+            clearStudioSelection();
+        } else {
+            setImageModeOn(true);
+        }
+    };
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -209,7 +229,7 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                                 Chateá con Cubito
                             </p>
                             <p className="text-sm text-gray-400 mt-1 max-w-sm">
-                                Preguntame lo que quieras, pedí que genere imágenes, o usá las herramientas de Valuación y Match de arriba.
+                                Preguntame lo que quieras, pedí que genere imágenes (también a partir de tus fotos: subilas en el panel de imágenes), o usá las herramientas de Valuación y Match de arriba.
                             </p>
                         </div>
                     </div>
@@ -268,6 +288,13 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                                                     Editar
                                                 </button>
                                                 <button
+                                                    onClick={() => addGeneratedToStudio(imageData)}
+                                                    className="flex items-center gap-1.5 text-xs text-secondary-600 hover:text-secondary-800 dark:text-secondary-400 dark:hover:text-secondary-300 font-medium"
+                                                >
+                                                    <FaWandMagicSparkles size={11} />
+                                                    Seguir trabajándola
+                                                </button>
+                                                <button
                                                     onClick={() => setImageForBlog(imageData)}
                                                     className="flex items-center gap-1.5 text-xs text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300 font-medium"
                                                 >
@@ -321,12 +348,38 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                         variant={isImageMode ? "shadow" : "flat"}
                         color={isImageMode ? "secondary" : "default"}
                         startContent={<FaImage size={12} />}
-                        onPress={() => setIsImageMode(!isImageMode)}
+                        onPress={toggleImageMode}
                         className="min-w-fit"
                     >
                         {isImageMode ? "Modo imagen" : "Generar imagen"}
                     </Button>
                 </div>
+                {isImageMode && selectedStudio.length > 0 && (
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="flex gap-1.5">
+                            {selectedStudio.map((img) => (
+                                <button
+                                    key={img.id}
+                                    type="button"
+                                    onClick={() => toggleStudioSelection(img.id)}
+                                    className="relative w-10 h-10 rounded-md overflow-hidden ring-2 ring-secondary group"
+                                    aria-label="Quitar de las referencias"
+                                    title="Quitar de las referencias"
+                                >
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={img.dataUrl} alt={img.name} className="w-full h-full object-cover" />
+                                    <span className="absolute inset-0 bg-black/50 text-white text-xs opacity-0 group-hover:opacity-100 flex items-center justify-center">✕</span>
+                                </button>
+                            ))}
+                        </div>
+                        <p className="text-[11px] text-gray-500 flex-1">
+                            Cubito va a trabajar sobre {selectedStudio.length === 1 ? "esta imagen" : `estas ${selectedStudio.length} imágenes`}.
+                        </p>
+                        <Button size="sm" variant="light" className="h-6 px-2 text-xs" onPress={clearStudioSelection} isDisabled={isGeneratingImage}>
+                            Quitar
+                        </Button>
+                    </div>
+                )}
                 <form onSubmit={handleSubmit} className="flex items-start gap-2">
                     {/* 3 renglones que crecen. Enter envía y Shift+Enter hace
                         un renglón nuevo (en celular, Enter es renglón). */}
@@ -336,7 +389,11 @@ function FreeChatPanel({ workspace }: WorkboardPanelProps) {
                             onValueChange={setInputValue}
                             onSend={submitInput}
                             maxLength={IMAGE_PROMPT_MAX_LENGTH}
-                            placeholder="Describí la imagen que querés generar..."
+                            placeholder={
+                                selectedStudio.length > 0
+                                    ? "Contale qué hacer con las imágenes elegidas (ej.: poné el producto sobre una mesa de madera)..."
+                                    : "Describí la imagen que querés generar..."
+                            }
                             isDisabled={isChatProcessing || isGeneratingImage}
                             isInvalid={isImagePromptTooLong}
                             description={`${inputValue.length}/${IMAGE_PROMPT_MAX_LENGTH} · Enter para enviar · Shift+Enter para un renglón nuevo`}
@@ -517,21 +574,65 @@ function renderValuacion(
     // Result ready
     if ((valuacionStatus === "completed" || valuacionStatus === "saved") && valuacionResult) {
         return (
-            <div className="p-4">
-                <ValuacionSticker result={valuacionResult} />
-                {valuacionStatus === "completed" && (
-                    <div className="flex gap-2 mt-4 justify-center">
-                        <Button size="sm" color="success" variant="shadow" onPress={workspace.handleSaveResult}>
-                            Guardar
-                        </Button>
-                        <Button size="sm" color="danger" variant="flat" onPress={() => workspace.handleDeleteValuacion(valuacionResult.id)}>
-                            Descartar
-                        </Button>
-                    </div>
-                )}
-            </div>
+            <ValuacionResultView
+                workspace={workspace}
+                result={valuacionResult}
+                isSaved={valuacionStatus === "saved"}
+            />
         );
     }
 
     return null;
+}
+
+/** Informe de la valuación en el tablero, con guardar / descartar y envío al blog. */
+function ValuacionResultView({
+    workspace,
+    result,
+    isSaved,
+}: WorkboardPanelProps & { result: ValuacionResult; isSaved: boolean }) {
+    const stickerRef = useRef<HTMLDivElement>(null);
+    const [isSendingToBlog, setIsSendingToBlog] = useState(false);
+
+    return (
+        <div className="p-4">
+            <div ref={stickerRef}>
+                <ValuacionSticker result={result} />
+            </div>
+            <div className="flex flex-wrap gap-2 mt-4 justify-center">
+                {!isSaved && (
+                    <>
+                        <Button size="sm" color="success" variant="shadow" onPress={workspace.handleSaveResult}>
+                            Guardar
+                        </Button>
+                        <Button size="sm" color="danger" variant="flat" onPress={() => workspace.handleDeleteValuacion(result.id)}>
+                            Descartar
+                        </Button>
+                    </>
+                )}
+                <Button
+                    size="sm"
+                    variant="flat"
+                    color="secondary"
+                    startContent={<FaFolderOpen size={11} />}
+                    onPress={() => setIsSendingToBlog(true)}
+                >
+                    Enviar a mi blog
+                </Button>
+            </div>
+
+            <SendToBlogModal
+                isOpen={isSendingToBlog}
+                onClose={() => setIsSendingToBlog(false)}
+                subject="la valuación"
+                getFile={async () => {
+                    const card = stickerRef.current?.firstElementChild as HTMLElement | null;
+                    if (!card) throw new Error("sticker");
+                    const dataUrl = await toPng(card, { quality: 0.95, pixelRatio: 2 });
+                    const name = (result.title || result.id).replace(/[^\p{L}\p{N}_-]+/gu, "-").slice(0, 50);
+                    return dataUrlToFile(dataUrl, `valuacion-${name}.png`);
+                }}
+            />
+        </div>
+    );
 }

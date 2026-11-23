@@ -5,6 +5,7 @@ import {
   Visibility_Of_Social_Media,
 } from '../../domain/entity/enum/post-visibility.enum';
 import { PostBehaviourType } from '../../domain/entity/enum/postBehaviourType.enum';
+import { geoReachSchemaFields } from 'src/contexts/module_shared/geo-reach/geo-reach';
 
 export interface attachedFiles {
   url: string;
@@ -32,6 +33,9 @@ export interface PostDocument extends Document {
     userSetted: boolean;
     description: string;
     ratio: number;
+    scope?: string;
+    zoneLevel?: string | null;
+    areas?: Record<string, { key: string; name: string }> | null;
   };
   category: Schema.Types.ObjectId[];
   comments: Schema.Types.ObjectId[];
@@ -92,6 +96,8 @@ export const PostSchema = new Schema<PostDocument>(
       userSetted: { type: Boolean, required: true },
       description: { type: String, required: true },
       ratio: { type: Number, required: true },
+      // Alcance por zona (sin valor = radio). Ver module_shared/geo-reach.
+      ...geoReachSchemaFields,
     },
     category: [
       {

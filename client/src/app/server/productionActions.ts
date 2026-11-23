@@ -93,7 +93,7 @@ import {
   ProductionUpdateRequest,
   ProductionVisibility,
   ProductionBehaviourType,
-  ProductionGeoLocation,
+  ProductionGeoLocationInput,
   ProductionExploreFilters,
   ProductionConsumption,
   ProductionFanList,
@@ -518,7 +518,7 @@ export const updateProductionBehaviour = async (
   productionId: string,
   behaviourType: ProductionBehaviourType,
   visibility?: ProductionVisibility,
-  geoLocation?: ProductionGeoLocation
+  geoLocation?: ProductionGeoLocationInput
 ): Promise<ProductionResponse | ProductionActionError> => {
   try {
     return await updateProductionBehaviourService(

@@ -47,6 +47,10 @@ export interface PostLocation {
   description: string;
   userSetted: boolean;
   ratio: number;
+  /** Radio, zona o todo el mundo (sin valor = radio). */
+  scope?: import("@/utils/data/geoReach").GeoReachScope | null;
+  zoneLevel?: import("@/utils/data/geoReach").GeoZoneLevel | null;
+  areas?: import("@/utils/data/geoReach").GeoAreas | null;
 }
 
 export interface PostLocationForm {
@@ -56,6 +60,11 @@ export interface PostLocationForm {
   description?: string;
   userSetted?: boolean;
   ratio?: number;
+  /** Radio (default), zona o todo el mundo. */
+  scope?: import("@/utils/data/geoReach").GeoReachScope;
+  zoneLevel?: import("@/utils/data/geoReach").GeoZoneLevel | null;
+  /** Zonas del punto elegido (las calcula `PlacePicker`). */
+  areas?: import("@/utils/data/geoReach").GeoAreasInput | null;
 }
 
 export interface PostCategory {

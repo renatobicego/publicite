@@ -1,3 +1,5 @@
+import { GeoReachScope, GeoZoneLevel } from 'src/contexts/module_shared/geo-reach/geo-reach.enums';
+import { GeoAreasInput } from 'src/contexts/module_shared/geo-reach/geo-reach.graphql';
 import { Field, Float, ID, InputType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import {
@@ -52,6 +54,25 @@ export class ProductionGeoLocationInput {
   @Field(() => Float, { description: 'Radio de alcance en metros (1000 a 200000)' })
   @IsNumber()
   ratio: number;
+
+  @Field(() => GeoReachScope, {
+    nullable: true,
+    description: 'radius (default) = dentro del radio; zone = sólo en una zona; world = todo el mundo',
+  })
+  @IsOptional()
+  @IsEnum(GeoReachScope)
+  scope?: GeoReachScope | null;
+
+  @Field(() => GeoZoneLevel, { nullable: true, description: 'Nivel de zona (sólo con scope zone)' })
+  @IsOptional()
+  @IsEnum(GeoZoneLevel)
+  zoneLevel?: GeoZoneLevel | null;
+
+  @Field(() => GeoAreasInput, { nullable: true, description: 'Zonas del punto, del geocodificador' })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => GeoAreasInput)
+  areas?: GeoAreasInput | null;
 }
 
 @InputType()

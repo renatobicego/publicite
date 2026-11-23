@@ -1,3 +1,4 @@
+import { GeoAreasInput } from 'src/contexts/module_shared/geo-reach/geo-reach.graphql';
 import {
   ProductionIdResponse,
   ProductionItemResponse,
@@ -34,7 +35,7 @@ export interface ProductionExploreOptions {
   /** Sin valor: "Todas". libre: solapa Libres. agenda: Agenda de contactos. */
   behaviourType?: ProductionBehaviourType;
   /** Ubicación del visitante, para el radio de los blogs libres. */
-  userLocation?: { latitude: number; longitude: number };
+  userLocation?: { latitude: number; longitude: number; areas?: GeoAreasInput | null };
   /** Agenda: tipo de relación a mostrar (hierarchy = todas). */
   relation?: Visibility_Of_Find;
   /** Sub-solapa por el ticket del blog completo (sin valor = todos). */

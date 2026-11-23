@@ -1,3 +1,4 @@
+import { GeoAreas } from 'src/contexts/module_shared/geo-reach/geo-reach';
 import { ClientSession } from 'mongoose';
 
 import { Production } from '../entity/production.entity';
@@ -48,12 +49,14 @@ export interface ProductionListFilter {
   activeAt?: Date;
   /**
    * Ubicación del visitante: los blogs libres con ubicación sólo se listan si
-   * el visitante está dentro de su radio, salvo los de `geoBypassOwnerIds`
+   * el visitante está dentro de su radio (o de su zona, o si son de todo el mundo), salvo los de `geoBypassOwnerIds`
    * (el propio visitante y su agenda), como en Anuncios.
    */
   geo?: {
     latitude: number;
     longitude: number;
+    /** Zonas del visitante, para los blogs limitados a una zona. */
+    areas: GeoAreas | null;
     bypassOwnerIds: string[];
   };
 }

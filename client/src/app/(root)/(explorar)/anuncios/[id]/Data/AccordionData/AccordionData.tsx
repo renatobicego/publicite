@@ -1,4 +1,5 @@
 "use client";
+import { geoReachSummary } from "@/utils/data/geoReach";
 import { AdSpacePost, Good, Petition, Service } from "@/types/postTypes";
 import { Accordion, AccordionItem, Spinner } from "@nextui-org/react";
 import { FaChevronLeft } from "react-icons/fa6";
@@ -87,6 +88,11 @@ const AccordionData = ({
             lng={post.geoLocation.location.coordinates[0]}
           />
         </Suspense>
+        {geoReachSummary(post.geoLocation) && (
+          <p className="text-sm">
+            Dónde se ve: <strong>{geoReachSummary(post.geoLocation)}</strong>
+          </p>
+        )}
         {post.geoLocation.userSetted && (
           <p className="text-sm">
             El usuario vendedor ha establecido la ubicación manualmente

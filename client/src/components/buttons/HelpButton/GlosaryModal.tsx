@@ -125,6 +125,14 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
                 digitales en Soon › Agenda de contactos.
               </li>
               <li>
+                Dónde se ve un anuncio geolocalizado (o un blog): al elegir la
+                ubicación, elegís Mundo, Continente, País, Provincia, Ciudad,
+                Barrio o un Radio en km. Con una zona lo ve sólo quien esté en
+                esa misma zona, sin pasar el límite (un anuncio sólo para CABA
+                no llega a Montevideo); con el radio, cualquiera dentro del
+                círculo.
+              </li>
+              <li>
                 Espacios publicitarios: radios, streaming, TV, vía pública,
                 diarios, revistas e influencers publican su espacio para que
                 las marcas los contacten. Están en Anuncios › Espacios
@@ -376,7 +384,17 @@ const GlosaryModal = ({ customButton }: { customButton?: React.ReactNode }) => {
               </li>
               <li>
                 Tablero de trabajo: envía a tu blog las imágenes generadas y
-                las Valuaciones IA, a una carpeta nueva o existente.
+                las Valuaciones IA. Como al guardar un anuncio en una revista,
+                elegís el blog y, dentro, el inicio, una carpeta o una carpeta
+                nueva.
+              </li>
+              <li>
+                Tus imágenes (Tablero de trabajo): en el chat libre, subí hasta
+                12 fotos en el panel izquierdo, editalas y tocá hasta 4 para
+                usarlas de referencia: Cubito genera la imagen nueva a partir
+                de ellas. Con &quot;Seguir trabajándola&quot; pasás una imagen
+                generada al panel. Las fotos quedan en tu navegador hasta que
+                las envíes a un blog.
               </li>
               <li>
                 Memoria del Tablero de trabajo: al volver, retomás tu última

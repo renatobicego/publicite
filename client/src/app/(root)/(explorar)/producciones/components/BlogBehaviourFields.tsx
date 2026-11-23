@@ -38,7 +38,7 @@ const BlogBehaviourFields = ({
         description={
           isAgenda
             ? "¿Qué parte de tu agenda de contactos puede verlo?"
-            : "¿Quién puede verlo dentro del radio de alcance?"
+            : "¿Quién puede verlo dentro de su alcance (radio o zona)?"
         }
         selectedKeys={[visibility]}
         disallowEmptySelection
@@ -55,7 +55,7 @@ const BlogBehaviourFields = ({
       </Select>
       {!isAgenda && (
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium">Ubicación y radio de alcance</span>
+          <span className="text-sm font-medium">Ubicación y alcance</span>
           <PlacePicker
             location={location}
             setFieldValue={locationFieldSetter(setLocation)}

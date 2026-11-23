@@ -175,8 +175,12 @@ Tu cartel es tu perfil público donde otros usuarios pueden ver tu información.
 
 **6. Configura la localización (para anuncios geolocalizados)**
    - Selecciona tu ubicación
-   - Define el **rango de alcance** (¿a cuántos kilómetros quieres que se vea?)
-   - Ejemplo: Si pones 10km, tu anuncio será visible para usuarios en ese radio
+   - Elige **dónde se ve** ("¿Dónde se ve?"), como los discos de una cerradura, del más grande al más chico:
+     - **Mundo**: lo ve cualquier persona, en cualquier lugar.
+     - **Continente**, **País**, **Provincia**, **Ciudad** o **Barrio**: lo ve sólo quien esté en esa misma zona que el punto elegido (el selector muestra cuál es, por ejemplo "Ciudad Autónoma de Buenos Aires"). La zona es el límite real: un anuncio sólo para CABA no lo ve nadie de Montevideo ni de la Provincia de Buenos Aires.
+     - **Radio**: lo ve quien esté a esa distancia (de 1 a 200 km), aunque sea de otra ciudad o de otro país. Ejemplo: con 10 km lo ven los usuarios dentro de ese círculo.
+   - Si un punto no tiene barrio (u otra zona) reconocido, esa opción aparece como "No disponible acá".
+   - Los anuncios publicados antes siguen con su radio.
 
 **7. Configura la visibilidad (para Anuncios de Agenda)**
    - Elige quién puede ver tu anuncio:
@@ -565,7 +569,7 @@ Cuando cambias de plan (para subir o para bajar), conservas los límites de tu p
 ### 📝 Crear un blog
 1. Ve a: https://soonpublicite.com/crear/produccion
 2. Si es un blog personal, elige su **comportamiento**, igual que en los anuncios:
-   - **Blog geolocalizado**: público (o sólo para usuarios registrados) y visible para quien esté dentro del **radio de alcance** de su ubicación. Al crearlo eliges la ubicación en el mapa y el radio (de 1 a 200 km).
+   - **Blog geolocalizado**: público (o sólo para usuarios registrados) y visible según su **alcance**: dentro de un radio de su ubicación (de 1 a 200 km), sólo en su barrio, ciudad, provincia, país o continente, o en todo el mundo, igual que los anuncios.
    - **Blog de mi agenda**: visible sólo para tu agenda de contactos (Contactos, Amigos o Top amigos), sin importar dónde estén.
    Los blogs de grupo no tienen comportamiento: los ven los miembros del grupo según su alcance.
 3. Completa el nombre, la descripción, la foto de portada y el texto de bienvenida
@@ -573,13 +577,13 @@ Cuando cambias de plan (para subir o para bajar), conservas los límites de tu p
 4. Elige el **alcance**: en un blog geolocalizado, Público o Registrados; en uno de agenda, Contactos, Amigos o Top amigos. En los dos puedes elegir **Sólo yo**
 5. ¡Listo! Entra al blog y empieza a cargar contenido
 
-**Cambiar el comportamiento**: en "Editar blog" → "Editar Comportamiento" pasas un blog de geolocalizado a agenda (o al revés) y cambias la ubicación y el radio de un blog geolocalizado.
+**Cambiar el comportamiento**: en "Editar blog" → "Editar Comportamiento" pasas un blog de geolocalizado a agenda (o al revés) y cambias la ubicación y el alcance (radio, zona o mundo) de un blog geolocalizado.
 
 **Cupos**: como con los anuncios, tu plan tiene un cupo de **blogs geolocalizados** y otro de **blogs de mi agenda** (se suman entre tus suscripciones y packs). Si se termina el de un tipo, puedes crear del otro, cambiar de plan o comprar un pack. La cantidad de blogs de grupo, de archivos por blog y el espacio de almacenamiento también dependen de tu plan. El **espacio de almacenamiento es uno solo** y suma los archivos de tus blogs y las fotos y videos de tus anuncios; se ve en "Control de Consumo".
 
 ### 🔍 Explorar producciones
 En https://soonpublicite.com/producciones hay tres solapas, como en Anuncios:
-- **Producciones**: todo lo que puedes ver. Los blogs geolocalizados aparecen sólo si estás dentro de su radio.
+- **Producciones**: todo lo que puedes ver. Los blogs geolocalizados aparecen sólo si estás dentro de su alcance (su radio o su zona).
 - **Producciones geolocalizadas**: blogs geolocalizados de otros usuarios cerca tuyo (dentro de su radio). Se filtran por cómo se entra al blog: Todos, Gratuitos (sin ticket), Ticket gratis o Ticket pago.
 - **Producciones de mi agenda**: blogs de agenda de tus contactos, con sub-solapas Todos, Contactos, Amigos y Top Amigos, y dentro de cada una el mismo filtro Todos / Gratuitos / Ticket gratis / Ticket pago.
 El filtro de ticket mira el ticket del blog completo: un blog que se entra libre cuenta como Gratuito aunque tenga carpetas o archivos con ticket.
@@ -631,7 +635,10 @@ El dueño encuentra en un solo menú: Mapa de tickets, Alcance y clave, Ventas d
 Al volver al Tablero de trabajo se retoma la última conversación con Cubito. El botón **"Historial"** muestra las conversaciones anteriores (para retomarlas o borrarlas) y **"Nueva"** empieza otra. En el campo de texto, **Enter envía** y **Shift+Enter** agrega un renglón. Las imágenes generadas no quedan guardadas en la conversación: hay que descargarlas o enviarlas al blog.
 
 ### 🎨 Enviar al blog desde el Tablero de trabajo
-En el Tablero de trabajo de Cubito (https://soonpublicite.com/cubito/tablerodetrabajo), cada **imagen generada** tiene "Enviar a mi blog", y cada **Valuación IA** guardada tiene el botón de carpeta "Enviar a mi blog" (se guarda el informe como imagen). Se elige el blog y dónde guardarlo: en el inicio, en una carpeta existente o en una carpeta nueva.
+En el Tablero de trabajo de Cubito (https://soonpublicite.com/cubito/tablerodetrabajo), cada **imagen generada** tiene "Enviar a mi blog", y cada **Valuación IA** (la recién hecha, debajo del informe, y las guardadas, con el botón de carpeta) también: se guarda el informe como imagen. Se elige igual que al guardar un anuncio en una revista: aparece la lista de tus blogs, cada uno se despliega con sus carpetas y se toca el destino (el inicio del blog, una carpeta o "Carpeta nueva").
+
+### 🖼️ Trabajar tus imágenes en el Tablero de trabajo
+En el chat libre del Tablero de trabajo, el panel izquierdo **"Tus imágenes"** permite subir (o arrastrar) hasta 12 fotos propias. Cada una se puede editar (recortar, brillo, contraste), descargar, enviar al blog o quitar. Al **tocar una imagen** queda elegida como referencia (hasta 4) y el campo pasa a "Modo imagen": se escribe qué hacer con ellas (cambiar el fondo, combinarlas, darles otro estilo…) y Cubito genera la imagen nueva a partir de esas fotos. Una imagen generada también se puede llevar al panel con "Seguir trabajándola". Las fotos del panel quedan en el navegador: no se suben a ningún lado hasta enviarlas a un blog, y se pierden al salir del tablero. En celular, el panel es la primera solapa.
 
 ### 🗑️ Eliminar un blog
 Con "Opciones" → "Eliminar blog" se abre una confirmación en la que hay que **escribir el nombre del blog**. Es definitivo: se borra todo su contenido.

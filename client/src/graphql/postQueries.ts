@@ -67,6 +67,16 @@ export const getPostByIdQuery = gql`
           type
         }
         userSetted
+        ratio
+        scope
+        zoneLevel
+        areas {
+          continent { key name }
+          country { key name }
+          province { key name }
+          city { key name }
+          neighborhood { key name }
+        }
       }
       modelType
       petitionType

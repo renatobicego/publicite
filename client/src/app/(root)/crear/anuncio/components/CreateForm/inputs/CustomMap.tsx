@@ -8,6 +8,7 @@ const CustomMap = ({
   handleLocationChange,
   geocodeLatLng,
   ratio,
+  showRadius = true,
 }: {
   lat: number;
   lng: number;
@@ -19,6 +20,8 @@ const CustomMap = ({
     userSetted?: boolean
   ) => { lat: number; lng: number };
   ratio: number;
+  /** El círculo sólo tiene sentido con alcance por radio (no por zona ni mundo). */
+  showRadius?: boolean;
 }) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [markerCluster, setMarkerCluster] = useState<MarkerClusterer | null>(
@@ -115,6 +118,10 @@ const CustomMap = ({
       circle.setCenter({ lat: marker.lat, lng: marker.lng });
     }
   }, [circle, marker, ratio]);
+
+  useEffect(() => {
+    circle?.setVisible(showRadius);
+  }, [circle, showRadius]);
 
   return (
     <>

@@ -1,4 +1,6 @@
 import { ObjectId } from 'mongoose';
+import { GeoReachScope, GeoZoneLevel } from 'src/contexts/module_shared/geo-reach/geo-reach.enums';
+import { GeoAreas } from 'src/contexts/module_shared/geo-reach/geo-reach';
 
 import { PostRecomendation } from './postRecomendation.entity';
 
@@ -20,6 +22,10 @@ interface PostLocation {
   userSetted: boolean;
   description: string;
   ratio: number;
+  /** Alcance (sin valor = radio). Ver `module_shared/geo-reach`. */
+  scope?: GeoReachScope;
+  zoneLevel?: GeoZoneLevel | null;
+  areas?: GeoAreas | null;
 }
 
 export class Post {

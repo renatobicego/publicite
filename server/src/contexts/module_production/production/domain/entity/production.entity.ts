@@ -1,3 +1,5 @@
+import { GeoReachScope, GeoZoneLevel } from 'src/contexts/module_shared/geo-reach/geo-reach.enums';
+import { GeoAreas, readGeoAreas } from 'src/contexts/module_shared/geo-reach/geo-reach';
 import {
   ProductionBehaviourType,
   ProductionModerationStatus,
@@ -23,6 +25,10 @@ export interface ProductionGeoLocation {
   userSetted: boolean;
   /** Radio de alcance en metros. */
   ratio: number;
+  /** Radio, zona o mundo (sin valor = radio). Ver `module_shared/geo-reach`. */
+  scope?: GeoReachScope;
+  zoneLevel?: GeoZoneLevel | null;
+  areas?: GeoAreas | null;
 }
 
 export interface ProductionProps {
@@ -227,6 +233,9 @@ export class Production {
             description: doc.geoLocation.description ?? '',
             userSetted: !!doc.geoLocation.userSetted,
             ratio: doc.geoLocation.ratio,
+            scope: doc.geoLocation.scope ?? GeoReachScope.radius,
+            zoneLevel: doc.geoLocation.zoneLevel ?? null,
+            areas: readGeoAreas(doc.geoLocation.areas),
           }
         : null,
       activeFrom: doc.activeFrom ?? null,

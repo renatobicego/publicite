@@ -1,3 +1,5 @@
+import { GeoReachScope, GeoZoneLevel } from 'src/contexts/module_shared/geo-reach/geo-reach.enums';
+import { GeoAreasResponse } from 'src/contexts/module_shared/geo-reach/geo-reach.graphql';
 import { Field, Float, ID, Int, ObjectType } from '@nestjs/graphql';
 
 import {
@@ -53,6 +55,15 @@ export class ProductionGeoLocationResponse {
 
   @Field(() => Float, { description: 'Radio de alcance en metros' })
   ratio: number;
+
+  @Field(() => GeoReachScope, { description: 'radius, zone o world' })
+  scope: GeoReachScope;
+
+  @Field(() => GeoZoneLevel, { nullable: true })
+  zoneLevel: GeoZoneLevel | null;
+
+  @Field(() => GeoAreasResponse, { nullable: true })
+  areas: GeoAreasResponse | null;
 }
 
 @ObjectType({ description: 'Datos públicos del dueño (usuario o grupo)' })

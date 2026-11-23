@@ -1,3 +1,4 @@
+import { geoReachSchemaFields } from 'src/contexts/module_shared/geo-reach/geo-reach';
 import { Document, model, Schema, Types } from 'mongoose';
 
 import {
@@ -62,6 +63,8 @@ const ProductionGeoLocationSchema = new Schema(
     userSetted: { type: Boolean, default: false },
     description: { type: String, default: '' },
     ratio: { type: Number, required: true },
+    // Alcance por zona (sin valor = radio). Ver module_shared/geo-reach.
+    ...geoReachSchemaFields,
   },
   { _id: false },
 );

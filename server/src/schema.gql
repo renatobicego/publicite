@@ -81,6 +81,19 @@ type GroupListResponse {
   hasMore: Boolean!
 }
 
+type GeoAreaResponse {
+  key: String!
+  name: String!
+}
+
+type GeoAreasResponse {
+  continent: GeoAreaResponse
+  country: GeoAreaResponse
+  province: GeoAreaResponse
+  city: GeoAreaResponse
+  neighborhood: GeoAreaResponse
+}
+
 type location_of_group_posts {
   description: String
 }
@@ -231,6 +244,32 @@ type PostLocation_Grapql {
   location: location
   userSetted: Boolean
   description: String
+
+  """Radio en metros"""
+  ratio: Float
+
+  """Sin valor = radius"""
+  scope: GeoReachScope
+  zoneLevel: GeoZoneLevel
+  areas: GeoAreasResponse
+}
+
+"""
+radius = radio; zone = misma zona administrativa; world = todo el mundo
+"""
+enum GeoReachScope {
+  radius
+  zone
+  world
+}
+
+"""Nivel de zona: barrio, ciudad/partido, provincia, país o continente"""
+enum GeoZoneLevel {
+  neighborhood
+  city
+  province
+  country
+  continent
 }
 
 type Visibility {
@@ -1824,6 +1863,11 @@ type ProductionGeoLocationResponse {
 
   """Radio de alcance en metros"""
   ratio: Float!
+
+  """radius, zone o world"""
+  scope: GeoReachScope!
+  zoneLevel: GeoZoneLevel
+  areas: GeoAreasResponse
 }
 
 """Datos públicos del dueño (usuario o grupo)"""
@@ -3027,6 +3071,35 @@ input AdminInvoiceFiltersInput {
 input UserLocation {
   latitude: Float!
   longitude: Float!
+
+  """
+  Zonas de quien mira (barrio, ciudad, provincia, país). Sin ellas no ve los anuncios ni blogs limitados a una zona.
+  """
+  areas: GeoAreasInput
+}
+
+input GeoAreasInput {
+  """Código ISO del país (AR, UY…)"""
+  countryCode: String
+  country: String
+
+  """Provincia / estado / departamento (UY)"""
+  province: String
+
+  """place_id de Google de ese nivel (no depende del idioma)"""
+  provinceId: String
+
+  """Ciudad, localidad o partido"""
+  city: String
+
+  """place_id de Google de ese nivel (no depende del idioma)"""
+  cityId: String
+
+  """Barrio"""
+  neighborhood: String
+
+  """place_id de Google de ese nivel (no depende del idioma)"""
+  neighborhoodId: String
 }
 
 """Medio del espacio publicitario"""
@@ -3063,6 +3136,9 @@ input PostSeudoBaseFilters {
 input UserLocation_group {
   latitude: Float!
   longitude: Float!
+
+  """Zonas de quien mira (ver UserLocation.areas)"""
+  areas: GeoAreasInput
 }
 
 """Define el tipo de get"""
@@ -3730,6 +3806,17 @@ input LocationOfPost {
   userSetted: Boolean!
   description: String!
   ratio: Float!
+
+  """
+  radius (default) = dentro del radio; zone = sólo en una zona; world = todo el mundo
+  """
+  scope: GeoReachScope
+
+  """Nivel de zona (sólo con scope zone)"""
+  zoneLevel: GeoZoneLevel
+
+  """Zonas del punto, del geocodificador"""
+  areas: GeoAreasInput
 }
 
 input LocationPost {
@@ -4195,6 +4282,17 @@ input ProductionGeoLocationInput {
 
   """Radio de alcance en metros (1000 a 200000)"""
   ratio: Float!
+
+  """
+  radius (default) = dentro del radio; zone = sólo en una zona; world = todo el mundo
+  """
+  scope: GeoReachScope
+
+  """Nivel de zona (sólo con scope zone)"""
+  zoneLevel: GeoZoneLevel
+
+  """Zonas del punto, del geocodificador"""
+  areas: GeoAreasInput
 }
 
 """Edición del header, estantería y muestrario"""

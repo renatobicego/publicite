@@ -40,6 +40,19 @@ import { compressDataUrl } from "@/utils/functions/compressDataUrl";
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
+/** Imágenes que puede tener el panel del chat libre. */
+export const MAX_STUDIO_IMAGES = 12;
+/** Referencias por generación (mismo tope que el server, `MAX_REFERENCE_IMAGES`). */
+export const MAX_STUDIO_REFERENCES = 4;
+
+export interface StudioImage {
+  id: string;
+  /** Data URL (JPEG achicado) lista para mandar como referencia. */
+  dataUrl: string;
+  name: string;
+  source: "upload" | "generated";
+}
+
 export function useWorkspace() {
   // General state
   const [activeModule, setActiveModule] = useState<WorkspaceModule>("chat");
@@ -62,6 +75,12 @@ export function useWorkspace() {
 
   // References panel
   const [references, setReferences] = useState<ReferenceImage[]>([]);
+
+  // Panel de imágenes del chat libre: fotos propias o generadas que se usan
+  // como referencia del generador. Viven sólo en el navegador (data URLs ya
+  // achicadas), así que no dejan archivos sueltos en UploadThing.
+  const [studioImages, setStudioImages] = useState<StudioImage[]>([]);
+  const [selectedStudioIds, setSelectedStudioIds] = useState<string[]>([]);
 
   // Valuación state
   const [valuacionId, setValuacionId] = useState<string | null>(null);
@@ -278,6 +297,63 @@ export function useWorkspace() {
   const updateReferenceUrl = useCallback((id: string, newUrl: string) => {
     setReferences((prev) => prev.map((r) => (r.id === id ? { ...r, url: newUrl } : r)));
   }, []);
+
+  // ============================================================
+  // IMÁGENES DEL CHAT LIBRE (referencias del generador)
+  // ============================================================
+
+  const addStudioImages = useCallback(
+    (images: Omit<StudioImage, "id">[]) => {
+      const room = MAX_STUDIO_IMAGES - studioImages.length;
+      if (room <= 0) {
+        toastifyError(`Podés tener hasta ${MAX_STUDIO_IMAGES} imágenes en el panel`);
+        return [];
+      }
+      if (images.length > room) {
+        toastifyError(`Sólo entraron ${room} de ${images.length}: el panel admite ${MAX_STUDIO_IMAGES} imágenes`);
+      }
+      const added = images.slice(0, room).map((img) => ({ ...img, id: generateId() }));
+      setStudioImages((prev) => [...prev, ...added]);
+      return added;
+    },
+    [studioImages.length]
+  );
+
+  const removeStudioImage = useCallback((id: string) => {
+    setStudioImages((prev) => prev.filter((img) => img.id !== id));
+    setSelectedStudioIds((prev) => prev.filter((sel) => sel !== id));
+  }, []);
+
+  const updateStudioImage = useCallback((id: string, dataUrl: string) => {
+    setStudioImages((prev) => prev.map((img) => (img.id === id ? { ...img, dataUrl } : img)));
+  }, []);
+
+  const toggleStudioSelection = useCallback((id: string) => {
+    setSelectedStudioIds((prev) => {
+      if (prev.includes(id)) return prev.filter((sel) => sel !== id);
+      if (prev.length >= MAX_STUDIO_REFERENCES) {
+        toastifyError(`Podés usar hasta ${MAX_STUDIO_REFERENCES} imágenes de referencia por vez`);
+        return prev;
+      }
+      return [...prev, id];
+    });
+  }, []);
+
+  const clearStudioSelection = useCallback(() => setSelectedStudioIds([]), []);
+
+  /** Pasa una imagen generada al panel y la deja elegida como referencia. */
+  const addGeneratedToStudio = useCallback(
+    async (image: { id: string; base64: string; prompt: string }) => {
+      const src = image.base64.startsWith("data:") ? image.base64 : `data:image/png;base64,${image.base64}`;
+      const [added] = addStudioImages([
+        { dataUrl: await compressDataUrl(src), name: image.prompt.slice(0, 60) || "Imagen generada", source: "generated" },
+      ]);
+      if (added && selectedStudioIds.length < MAX_STUDIO_REFERENCES) {
+        setSelectedStudioIds((prev) => [...prev, added.id]);
+      }
+    },
+    [addStudioImages, selectedStudioIds.length]
+  );
 
   // ============================================================
   // VALUACIÓN IA
@@ -574,20 +650,31 @@ export function useWorkspace() {
     setIsGeneratingImage(true);
     setChatMessages((prev) => [
       ...prev,
-      { id: generateId(), role: "user", content: `🎨 Generar imagen: ${prompt}`, timestamp: new Date() },
+      {
+        id: generateId(),
+        role: "user",
+        content: selectedStudioIds.length > 0
+          ? `🎨 Generar imagen (con ${selectedStudioIds.length} ${selectedStudioIds.length === 1 ? "imagen" : "imágenes"} de referencia): ${prompt}`
+          : `🎨 Generar imagen: ${prompt}`,
+        timestamp: new Date(),
+      },
     ]);
 
-    // Contexto para follow-ups: usamos la última imagen generada como referencia
-    // para que el BE la edite (p. ej. "el mismo perro pero ahora con su dueño").
-    // Si no hay ninguna, se genera desde cero.
+    // Referencias: si el usuario eligió imágenes del panel, se trabaja sobre
+    // ésas. Si no, se usa la última imagen generada para los follow-ups (p. ej.
+    // "el mismo perro pero ahora con su dueño"). Sin ninguna, desde cero.
+    const selectedStudio = studioImages.filter((img) => selectedStudioIds.includes(img.id));
     const lastImage = generatedImages[generatedImages.length - 1];
 
     try {
       // Se manda comprimida: el PNG original en base64 pesa varios MB y hacía
-      // fallar el server action en la segunda generación.
-      const referenceImages = lastImage?.base64
-        ? [await compressDataUrl(lastImage.base64)]
-        : undefined;
+      // fallar el server action en la segunda generación. Las del panel ya
+      // entran achicadas.
+      const referenceImages = selectedStudio.length > 0
+        ? selectedStudio.map((img) => img.dataUrl)
+        : lastImage?.base64
+          ? [await compressDataUrl(lastImage.base64)]
+          : undefined;
       const res = await generateAdImageWithAI(prompt, referenceImages);
       console.log("[WorkspaceChat] generateAdImageWithAI response:", {
         hasRes: !!res,
@@ -621,7 +708,7 @@ export function useWorkspace() {
     }
 
     setIsGeneratingImage(false);
-  }, [user, generatedImages]);
+  }, [user, generatedImages, studioImages, selectedStudioIds]);
 
   // ============================================================
   // GENERAL
@@ -665,6 +752,16 @@ export function useWorkspace() {
     addReference,
     removeReference,
     updateReferenceUrl,
+
+    // Imágenes del chat libre
+    studioImages,
+    selectedStudioIds,
+    addStudioImages,
+    removeStudioImage,
+    updateStudioImage,
+    toggleStudioSelection,
+    clearStudioSelection,
+    addGeneratedToStudio,
 
     // Chat libre
     chatMessages,

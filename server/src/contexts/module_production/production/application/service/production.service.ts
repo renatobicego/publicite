@@ -1,3 +1,4 @@
+import { buildGeoAreas } from 'src/contexts/module_shared/geo-reach/geo-reach';
 import {
   BadRequestException,
   Inject,
@@ -1148,6 +1149,7 @@ export class ProductionService implements ProductionServiceInterface {
       ? {
           latitude: userLocation.latitude,
           longitude: userLocation.longitude,
+          areas: buildGeoAreas(userLocation.areas),
           bypassOwnerIds: [
             ...(scope.userId ? [scope.userId] : []),
             ...Array.from(scope.relationMap.keys()),

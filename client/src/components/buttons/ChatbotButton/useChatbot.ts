@@ -218,6 +218,13 @@ export function useChatbot() {
           description: data.geoLocation?.description || "",
           userSetted: true,
           ratio: (data.geoLocation?.ratio || 5) * 1000,
+          // Radio, zona o todo el mundo (ver utils/data/geoReach.ts).
+          scope: data.geoLocation?.scope ?? "radius",
+          zoneLevel:
+            data.geoLocation?.scope === "zone"
+              ? data.geoLocation?.zoneLevel ?? null
+              : null,
+          areas: data.geoLocation?.areas ?? null,
         },
         attachedFiles: [],
         createAt: today(getLocalTimeZone()).toString(),

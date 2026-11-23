@@ -1,4 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
+import { GeoReachInput, normalizeGeoReach } from 'src/contexts/module_shared/geo-reach/geo-reach';
 
 import {
   ProductionBehaviourType,
@@ -70,7 +71,7 @@ export function normalizeGeoLocation(
         description?: string | null;
         userSetted?: boolean | null;
         ratio: number;
-      }
+      } & GeoReachInput
     | null
     | undefined,
 ): ProductionGeoLocation {
@@ -99,11 +100,16 @@ export function normalizeGeoLocation(
       'El radio de alcance debe estar entre 1 y 200 km',
     );
   }
+  // Radio, zona o mundo: valida que el punto tenga la zona elegida.
+  const { scope, zoneLevel, areas } = normalizeGeoReach(geo);
   return {
     location: { type: 'Point', coordinates: [longitude, latitude] },
     description: geo.description?.trim() ?? '',
     userSetted: !!geo.userSetted,
     ratio: Math.round(ratio),
+    scope,
+    zoneLevel,
+    areas,
   };
 }
 

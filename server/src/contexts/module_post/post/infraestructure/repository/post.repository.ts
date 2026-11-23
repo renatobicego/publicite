@@ -1,3 +1,8 @@
+import {
+  buildGeoAreas,
+  buildGeoReachExpr,
+  readGeoAreas,
+} from 'src/contexts/module_shared/geo-reach/geo-reach';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { ClientSession, Connection, Model, Types } from 'mongoose';
 
@@ -833,6 +838,7 @@ export class PostRepository implements PostRepositoryInterface {
     try {
       this.logger.log(`Finding posts by postType: ${postType}`);
       const today = new Date();
+      const viewerAreas = buildGeoAreas(userLocation.areas);
 
       // Prepara el stage de filtrado
       const matchStage: any = {
@@ -883,7 +889,7 @@ export class PostRepository implements PostRepositoryInterface {
         },
         {
           $match: {
-            $expr: { $lte: ['$distance', '$geoLocation.ratio'] },
+            $expr: buildGeoReachExpr('$distance', viewerAreas),
           },
         },
         {
@@ -1001,6 +1007,7 @@ export class PostRepository implements PostRepositoryInterface {
     try {
       this.logger.log('Finding all posts (global)');
       const today = new Date();
+      const viewerAreas = buildGeoAreas(userLocation.areas);
 
       const isAuthenticated = userRelationMap !== undefined;
       const openVisibility = isAuthenticated ? ['public', 'registered'] : ['public'];
@@ -1059,11 +1066,11 @@ export class PostRepository implements PostRepositoryInterface {
               $expr: {
                 $or: [
                   { $in: ['$author', friendAuthorIds] },
-                  { $lte: ['$distance', '$geoLocation.ratio'] },
+                  buildGeoReachExpr('$distance', viewerAreas),
                 ],
               },
             }
-          : { $expr: { $lte: ['$distance', '$geoLocation.ratio'] } };
+          : { $expr: buildGeoReachExpr('$distance', viewerAreas) };
 
       const pipeline: any[] = [
         {
@@ -1193,6 +1200,7 @@ export class PostRepository implements PostRepositoryInterface {
       try {
         this.logger.log('Finding all posts');
         const today = new Date();
+        const viewerAreas = buildGeoAreas(userLocation.areas);
 
         // Prepara el stage de filtrado
         const matchStage: any = {
@@ -1240,7 +1248,7 @@ export class PostRepository implements PostRepositoryInterface {
           },
           {
             $match: {
-              $expr: { $lte: ['$distance', '$geoLocation.ratio'] },
+              $expr: buildGeoReachExpr('$distance', viewerAreas),
             },
           },
           {
@@ -1357,6 +1365,7 @@ export class PostRepository implements PostRepositoryInterface {
   ): Promise<PostsMemberGroupResponse | null> {
     try {
       if (membersId.length === 0) return { userAndPosts: [], hasMore: false };
+      const viewerAreas = buildGeoAreas(userLocation.areas);
       const pipeline: any[] = [
         {
           $geoNear: {
@@ -1380,7 +1389,7 @@ export class PostRepository implements PostRepositoryInterface {
                   },
                   { postBehaviourType: 'libre' },
                   { isActive: true },
-                  { $expr: { $lte: ['$distance', '$geoLocation.ratio'] } },
+                  { $expr: buildGeoReachExpr('$distance', viewerAreas) },
                 ],
               },
               {
@@ -1455,6 +1464,8 @@ export class PostRepository implements PostRepositoryInterface {
       if (!postById) return { post: null, recomended: [] };
       const category = postById.category[0]._id ?? null;
       const userLocation = postById.geoLocation.location.coordinates;
+      // Recomendados: se miran desde el anuncio, con sus propias zonas.
+      const viewerAreas = readGeoAreas(postById.geoLocation?.areas);
       const query = {
         isActive: true,
         endDate: { $gte: today },
@@ -1477,7 +1488,7 @@ export class PostRepository implements PostRepositoryInterface {
         },
         {
           $match: {
-            $expr: { $lte: ['$distance', '$geoLocation.ratio'] },
+            $expr: buildGeoReachExpr('$distance', viewerAreas),
           },
         },
         { $limit: 4 }, // Limitar los resultados a 4

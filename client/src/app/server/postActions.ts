@@ -17,6 +17,15 @@ const storageErrorMessage = (err: unknown): string | null => {
   return message?.includes("No tenés espacio suficiente") ? message : null;
 };
 
+/** Error del alcance por zona (el punto no tiene la zona elegida). */
+const geoReachErrorMessage = (err: unknown): string | null => {
+  const message = getProductionErrorMessage(err);
+  return message &&
+    (message.includes("No pudimos reconocer") || message.includes("Elegí en qué zona"))
+    ? message
+    : null;
+};
+
 export const createPost = async (
   formData: any,
   userCanPublishPost: boolean
@@ -39,6 +48,7 @@ export const createPost = async (
       error:
         adSpaceMessage ??
         storageErrorMessage(err) ??
+        geoReachErrorMessage(err) ??
         "Error al crear el anuncio. Por favor intenta de nuevo.",
     };
   }

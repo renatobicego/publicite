@@ -1,4 +1,5 @@
 "use client";
+import type { GeoAreasInput } from "@/utils/data/geoReach";
 
 import { INITIAL_LOCATION } from "@/components/modals/SelectManualLocation/ManualLocationPicker";
 import { PubliciteDataTypes } from "@/utils/data/fetchDataByType";
@@ -17,6 +18,8 @@ type LocationAwarePostType = "good" | "service" | "petition";
 export interface Coordinates {
   latitude: number;
   longitude: number;
+  /** Zonas de quien mira: las agrega `withGeoAreas` justo antes de pedir una lista. */
+  areas?: GeoAreasInput | null;
 }
 
 interface LocationContextType {

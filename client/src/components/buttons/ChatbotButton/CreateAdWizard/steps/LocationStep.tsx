@@ -6,7 +6,6 @@ import {
     ModalContent,
     ModalFooter,
     ModalHeader,
-    Slider,
     Spinner,
     useDisclosure,
 } from "@nextui-org/react";
@@ -16,6 +15,14 @@ import { toastifyError } from "@/utils/functions/toastify";
 import PrimaryButton from "@/components/buttons/PrimaryButton";
 import { Wrapper, Status } from "@googlemaps/react-wrapper";
 import LatLngAutocomplete from "@/components/inputs/LatLngAutocomplete";
+import GeoReachSelector from "@/app/(root)/crear/anuncio/components/CreateForm/inputs/GeoReachSelector";
+import {
+    GeoAreasInput,
+    GeoReachScope,
+    GeoZoneLevel,
+    zoneNamesOf,
+} from "@/utils/data/geoReach";
+import { reverseGeocodeAreas } from "@/utils/functions/geoAreas";
 
 interface LocationStepProps {
     onSubmit: (location: {
@@ -23,6 +30,9 @@ interface LocationStepProps {
         lng: number;
         description: string;
         ratio: number;
+        scope?: GeoReachScope;
+        zoneLevel?: GeoZoneLevel | null;
+        areas?: GeoAreasInput | null;
     }) => void;
 }
 
@@ -37,6 +47,30 @@ const LocationStep = ({ onSubmit }: LocationStepProps) => {
     } | null>(null);
     const [address, setAddress] = useState("");
     const [ratio, setRatio] = useState(5);
+    // Dónde se ve: radio, una zona (barrio, ciudad, provincia…) o todo el mundo.
+    const [scope, setScope] = useState<GeoReachScope>("radius");
+    const [zoneLevel, setZoneLevel] = useState<GeoZoneLevel | null>(null);
+    const [zones, setZones] = useState<{ key: string; areas: GeoAreasInput | null } | null>(null);
+    const pointKey = selectedLocation
+        ? `${selectedLocation.lat},${selectedLocation.lng}`
+        : null;
+    const isLoadingZones = !!pointKey && zones?.key !== pointKey;
+
+    useEffect(() => {
+        if (!selectedLocation || !pointKey) return;
+        let active = true;
+        reverseGeocodeAreas(selectedLocation.lat, selectedLocation.lng).then((areas) => {
+            if (active) setZones({ key: pointKey, areas });
+        });
+        return () => {
+            active = false;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pointKey]);
+
+    const zoneNames = zones?.key === pointKey ? zoneNamesOf(zones.areas) : {};
+    const isZoneMissing =
+        scope === "zone" && !!zoneLevel && !isLoadingZones && !zoneNames[zoneLevel];
     const [loadingCurrentLocation, setLoadingCurrentLocation] = useState(false);
 
     const handleUseCurrentLocation = () => {
@@ -81,7 +115,13 @@ const LocationStep = ({ onSubmit }: LocationStepProps) => {
 
     const handleMapConfirm = (onClose: () => void) => {
         if (selectedLocation) {
-            onSubmit({ ...selectedLocation, ratio });
+            onSubmit({
+                ...selectedLocation,
+                ratio,
+                scope,
+                zoneLevel: scope === "zone" ? zoneLevel : null,
+                areas: zones?.key === pointKey ? zones.areas : null,
+            });
             onClose();
         }
     };
@@ -144,16 +184,24 @@ const LocationStep = ({ onSubmit }: LocationStepProps) => {
                                     </Wrapper>
                                 )}
                                 <div className="mt-4">
-                                    <Slider
-                                        label="Radio de alcance (km)"
-                                        step={1}
-                                        minValue={1}
-                                        maxValue={50}
-                                        value={ratio}
-                                        onChange={(val) => setRatio(val as number)}
-                                        size="sm"
-                                        className="max-w-full"
-                                    />
+                                    {selectedLocation ? (
+                                        <GeoReachSelector
+                                            scope={scope}
+                                            zoneLevel={zoneLevel}
+                                            zoneNames={zoneNames}
+                                            isLoadingZones={isLoadingZones}
+                                            ratio={ratio}
+                                            onChange={(newScope, level) => {
+                                                setScope(newScope);
+                                                setZoneLevel(level);
+                                            }}
+                                            onRatioChange={setRatio}
+                                        />
+                                    ) : (
+                                        <p className="text-xs text-default-500">
+                                            Elegí un punto en el mapa para ver dónde puede verse el anuncio.
+                                        </p>
+                                    )}
                                 </div>
                                 {address && (
                                     <p className="text-sm text-gray-600 mt-2">{address}</p>
@@ -165,7 +213,7 @@ const LocationStep = ({ onSubmit }: LocationStepProps) => {
                                 </Button>
                                 <PrimaryButton
                                     onPress={() => handleMapConfirm(onClose)}
-                                    isDisabled={!selectedLocation}
+                                    isDisabled={!selectedLocation || isLoadingZones || isZoneMissing}
                                 >
                                     Confirmar
                                 </PrimaryButton>

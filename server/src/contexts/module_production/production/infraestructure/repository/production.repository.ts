@@ -1,3 +1,4 @@
+import { buildGeoReachExpr } from 'src/contexts/module_shared/geo-reach/geo-reach';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ClientSession, Model, Types } from 'mongoose';
@@ -244,7 +245,7 @@ export class ProductionRepository implements ProductionRepositoryInterface {
       });
     }
 
-    // Radio de alcance de los blogs libres (como Anuncios). Los de grupo, los
+    // Alcance de los blogs libres (radio, zona o mundo, como Anuncios). Los de grupo, los
     // de agenda y los que no tienen ubicación no se filtran por distancia.
     if (filter.geo) {
       and.push({
@@ -254,12 +255,11 @@ export class ProductionRepository implements ProductionRepositoryInterface {
           { geoLocation: null },
           { owner: { $in: toObjectIds(filter.geo.bypassOwnerIds) } },
           {
-            $expr: {
-              $lte: [
-                buildDistanceMetersExpr(filter.geo.latitude, filter.geo.longitude),
-                '$geoLocation.ratio',
-              ],
-            },
+            // Radio, zona o mundo, igual que Anuncios.
+            $expr: buildGeoReachExpr(
+              buildDistanceMetersExpr(filter.geo.latitude, filter.geo.longitude),
+              filter.geo.areas,
+            ),
           },
         ],
       });

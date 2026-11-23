@@ -92,7 +92,7 @@ import {
   ProductionUpdateRequest,
   ProductionVisibility,
   ProductionBehaviourType,
-  ProductionGeoLocation,
+  ProductionGeoLocationInput,
   ProductionExploreFilters,
   ProductionConsumption,
   ProductionFanList,
@@ -607,7 +607,7 @@ export const updateProductionBehaviourService = async (
   productionId: string,
   behaviourType: ProductionBehaviourType,
   visibility?: ProductionVisibility,
-  geoLocation?: ProductionGeoLocation
+  geoLocation?: ProductionGeoLocationInput
 ): Promise<ProductionResponse> => {
   const tokenCache = await getAuthToken();
   const { context } = await getApiContext(false, tokenCache);

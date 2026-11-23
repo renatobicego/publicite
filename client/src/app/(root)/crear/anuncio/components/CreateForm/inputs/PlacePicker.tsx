@@ -1,10 +1,18 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import CustomMap from "./CustomMap";
 import { PostLocationForm } from "@/types/postTypes";
 import { toastifyError } from "@/utils/functions/toastify";
 import { Libraries } from "@react-google-maps/api";
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
-import { Slider, Spinner } from "@nextui-org/react";
+import { Spinner } from "@nextui-org/react";
+import GeoReachSelector from "./GeoReachSelector";
+import {
+  GeoAreasInput,
+  GeoReachScope,
+  GeoZoneLevel,
+  zoneNamesOf,
+} from "@/utils/data/geoReach";
+import { reverseGeocodeAreas } from "@/utils/functions/geoAreas";
 const libraries: Libraries = ["places"];
 const INITIAL_LOCATION = { lat: -34.6115643483578, lng: -58.38901999245833 };
 
@@ -42,11 +50,45 @@ export default memo(PlacePickerWrapper);
 
 const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
   const [ratio, setRatio] = useState(location.ratio || 5);
+  const scope: GeoReachScope = location.scope ?? "radius";
+  // El mapa registra el clic una sola vez: se lee el valor actual desde acá.
+  const latest = useRef({ location, ratio });
+  useEffect(() => {
+    latest.current = { location, ratio };
+  });
+  // Zonas del punto (barrio, ciudad, provincia…), para elegir dónde se ve.
+  const [zones, setZones] = useState<{ key: string; areas: GeoAreasInput | null } | null>(null);
+  const pointKey =
+    location.lat && location.lng ? `${location.lat},${location.lng}` : null;
+  const isLoadingZones = !!pointKey && zones?.key !== pointKey;
 
-  const handleRatioChange = (newRatio: number | number[]) => {
-    setRatio(newRatio as number);
-    setFieldValue("geoLocation.ratio", newRatio as number);
+  useEffect(() => {
+    if (!pointKey || !location.lat || !location.lng) return;
+    let active = true;
+    reverseGeocodeAreas(location.lat, location.lng).then((areas) => {
+      if (!active) return;
+      setZones({ key: pointKey, areas });
+      setFieldValue("geoLocation.areas", areas);
+    });
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pointKey]);
+
+  const handleRatioChange = (newRatio: number) => {
+    setRatio(newRatio);
+    setFieldValue("geoLocation.ratio", newRatio);
   };
+
+  const handleReachChange = (
+    newScope: GeoReachScope,
+    zoneLevel: GeoZoneLevel | null
+  ) => {
+    setFieldValue("geoLocation.scope", newScope);
+    setFieldValue("geoLocation.zoneLevel", zoneLevel);
+  };
+
   // Function to handle location and zoom updates
   const handleChangeLocation = (
     lat: number,
@@ -59,7 +101,11 @@ const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
       lng,
       description,
       userSetted: userSetted || false,
-      ratio,
+      ratio: latest.current.ratio,
+      // El alcance elegido se mantiene; las zonas se vuelven a leer del punto nuevo.
+      scope: latest.current.location.scope ?? "radius",
+      zoneLevel: latest.current.location.zoneLevel ?? null,
+      areas: null,
     });
     return { lat, lng };
   };
@@ -72,8 +118,7 @@ const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
           const { latitude, longitude } = position.coords;
           geocodeLatLng(latitude, longitude);
         },
-        (error) => {
-          // toastifyError("Error al obtener la ubicación: " + error.message);
+        () => {
           geocodeLatLng(INITIAL_LOCATION.lat, INITIAL_LOCATION.lng);
         }
       );
@@ -114,32 +159,16 @@ const PlacePicker = ({ location, setFieldValue, error }: PlacePickerProps) => {
         handleLocationChange={handleChangeLocation}
         geocodeLatLng={geocodeLatLng}
         ratio={ratio}
+        showRadius={scope === "radius"}
       />
-      <Slider
-        label="Radio de alcance"
-        marks={[
-          {
-            value: 5,
-            label: "5km",
-          },
-          {
-            value: 50,
-            label: "50km",
-          },
-          {
-            value: 100,
-            label: "100km",
-          },
-          {
-            value: 200,
-            label: "200km",
-          },
-        ]}
-        minValue={1}
-        maxValue={200}
-        value={ratio}
-        formatOptions={{ style: "unit", unit: "kilometer" }}
-        onChange={handleRatioChange}
+      <GeoReachSelector
+        scope={scope}
+        zoneLevel={location.zoneLevel}
+        zoneNames={zones?.key === pointKey ? zoneNamesOf(zones.areas) : {}}
+        isLoadingZones={isLoadingZones}
+        ratio={ratio}
+        onChange={handleReachChange}
+        onRatioChange={handleRatioChange}
       />
       {!!error && (
         <p className="text-danger text-small">

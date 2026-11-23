@@ -1,4 +1,5 @@
 "use client";
+import type { GeoAreasInput, GeoReachScope, GeoZoneLevel } from "@/utils/data/geoReach";
 import { useState, useCallback } from "react";
 import { AdPostType, WizardData, WizardMessage, WizardStep } from "./types";
 import { PostBehaviourType } from "@/types/postTypes";
@@ -186,6 +187,9 @@ export const useCreateAdWizard = () => {
       lng: number;
       description: string;
       ratio: number;
+      scope?: GeoReachScope;
+      zoneLevel?: GeoZoneLevel | null;
+      areas?: GeoAreasInput | null;
     }) => {
       addUserMessage(geoLocation.description);
       setData((prev) => ({
